@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:homies/pages/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,6 +13,10 @@ final _router = GoRouter(
       path: '/',
       builder: (context, state) => Placeholder(),
     ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => LoginPage(),
+    ),
   ],
 );
 
@@ -19,7 +24,6 @@ final _router = GoRouter(
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
