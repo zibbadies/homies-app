@@ -21,9 +21,19 @@ final theme = ThemeData(
   ),
 
   textTheme: TextTheme(
-    headlineMedium: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-    bodyMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-    displayMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-    labelSmall: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+    displayLarge: TextStyle(fontSize: 52, fontWeight: FontWeight.bold),
+    displaySmall: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+
+    headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+    headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+
+    titleLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+    titleSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+
+    bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+    bodyMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+    
+    labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+    labelMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
   ),
 );
