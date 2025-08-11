@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:homies/extensions/theme_extension.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,9 @@ class LoginPage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                    context.go("/register");
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.colors.primary,
                   shape: RoundedRectangleBorder(
