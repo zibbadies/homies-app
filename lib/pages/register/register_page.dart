@@ -20,12 +20,13 @@ class RegisterPage extends StatelessWidget {
                 children: [
                   Text("This could be you!", style: context.texts.titleMedium),
                   SizedBox(height: 12),
-                  CircleAvatar(radius: 96),
+                  CircleAvatar(radius: 64),
                   SizedBox(height: 12),
                   Text("Username", style: context.texts.titleLarge),
                 ],
               ),
             ),
+            SizedBox(height: 24),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -35,41 +36,201 @@ class RegisterPage extends StatelessWidget {
                 ),
                 SizedBox(height: 12),
                 Text(
-                  "Start by creating an account",
+                  "Start by creating an account.",
                   style: context.texts.displaySmall,
                 ),
                 SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.go("/register");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.colors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      fixedSize: const Size(double.infinity, 56),
+
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12, bottom: 2),
+                      child: Text("Username", style: context.texts.titleSmall),
                     ),
-                    child: Text("Sign Up", style: context.texts.labelLarge),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.25,
+                            ),
+                            spreadRadius: 0,
+                            blurRadius: 4,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: TextFormField(
+                        controller: null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Non puo rimanere vuotol';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.fromLTRB(
+                            48,
+                            16,
+                            12,
+                            16,
+                          ),
+                          filled: true,
+                          fillColor: context.colors.surfaceContainer,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                            borderSide: BorderSide.none,
+                          ),
+                          hintText: "Splarpo",
+                          hintStyle: context.texts.bodyLarge!.copyWith(
+                            color: context.colors.onSecondary.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+
+                          errorStyle: context.texts.titleSmall!.copyWith(
+                            color: context.colors.error,
+                          ),
+                        ),
+                        style: context.texts.bodyLarge!.copyWith(
+                          color: context.colors.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12, bottom: 2),
+                      child: Text("Password", style: context.texts.titleSmall),
+                    ),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: context.colors.onSurface.withValues(
+                              alpha: 0.25,
+                            ),
+                            spreadRadius: 0,
+                            blurRadius: 4,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: TextFormField(
+                        controller: null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Non puo rimanere vuotol';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.fromLTRB(
+                            48,
+                            16,
+                            12,
+                            16,
+                          ),
+                          filled: true,
+                          fillColor: context.colors.surfaceContainer,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                            borderSide: BorderSide.none,
+                          ),
+                          hintText: "A\$\$word.",
+                          hintStyle: context.texts.bodyLarge!.copyWith(
+                            color: context.colors.onSecondary.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+
+                          errorStyle: context.texts.titleSmall!.copyWith(
+                            color: context.colors.error,
+                          ),
+                        ),
+                        style: context.texts.bodyLarge!.copyWith(
+                          color: context.colors.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: context.colors.onSurface.withValues(alpha: 0.25),
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: Offset(0, 1),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.go("/register");
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: context.colors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        fixedSize: const Size(double.infinity, 56),
+                      ),
+                      child: Text("Sign Up", style: context.texts.labelLarge),
+                    ),
                   ),
                 ),
+
                 SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.go("/register");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.colors.secondary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(999),
+
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: context.colors.onSurface.withValues(alpha: 0.25),
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: Offset(0, 1),
                       ),
-                      fixedSize: const Size(double.infinity, 56),
+                    ],
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.go("/register");
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: context.colors.secondary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        fixedSize: const Size(double.infinity, 56),
+                      ),
+                      child: Text(
+                        "I'm aldready like that",
+                        style: context.texts.labelLarge!.copyWith(
+                          color: context.colors.onSecondary,
+                        ),
+                      ),
                     ),
-                    child: Text("I'm aldready like that", style: context.texts.labelLarge!.copyWith(color: context.colors.onSecondary)),
                   ),
                 ),
               ],
