@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:homies/pages/home/home_page.dart';
-import 'package:homies/pages/login/login_page.dart';
-import 'package:homies/pages/register/register_page.dart';
-import 'package:homies/pages/welcome_page.dart';
+import 'package:homies/ui/pages/home/home_page.dart';
+import 'package:homies/ui/pages/login/login_page.dart';
+import 'package:homies/ui/pages/register/register_page.dart';
+import 'package:homies/ui/pages/welcome_page.dart';
 
 final router = GoRouter(
   routes: [
