@@ -31,11 +31,13 @@ class HButton extends StatelessWidget {
       ),
       child: SizedBox(
         width: double.infinity,
-        child: ElevatedButton(
+        // TODO: farlo bene con InkWell
+        child: TextButton(
           onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-            elevation: 0,
+          style: TextButton.styleFrom(
             backgroundColor: color,
+            foregroundColor: textColor ?? context.colors.onSurface,
+
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),

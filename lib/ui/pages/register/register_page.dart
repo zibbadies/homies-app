@@ -66,7 +66,9 @@ class RegisterPage extends StatelessWidget {
                   text: "I already have an account",
                   color: context.colors.secondary,
                   textColor: context.colors.onSecondary,
-                  onPressed: () {},
+                  onPressed: () {
+                    context.go('/login');
+                  },
                 ),
               ],
             ),

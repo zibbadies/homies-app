@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
-import 'package:homies/ui/components/h_labeled_input.dart';
 
 class AvatarPage extends StatelessWidget {
   const AvatarPage({super.key});
