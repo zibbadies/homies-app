@@ -11,8 +11,8 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usernameInput = TextEditingController();
-    final passwordInput = TextEditingController();
+    final usernameController = TextEditingController();
+    final passwordController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -44,11 +44,20 @@ class RegisterPage extends StatelessWidget {
 
                 SizedBox(height: 24),
 
-                HLabeledInput(label: "Username", hint: "Splarpo", controller: usernameInput),
+                HLabeledInput(
+                  label: "Username",
+                  hint: "Splarpo",
+                  controller: usernameController,
+                ),
 
                 SizedBox(height: 8),
 
-                HLabeledInput(label: "Password", hint: "Pa\$\$w0rd", controller: passwordInput, obscurable: true,),
+                HLabeledInput(
+                  label: "Password",
+                  hint: "Pa\$\$w0rd",
+                  controller: passwordController,
+                  obscurable: true,
+                ),
 
                 SizedBox(height: 24),
 
