@@ -1,30 +1,45 @@
 import 'package:dio/dio.dart';
 import 'package:homies/data/models/token.dart';
-import 'package:homies/data/models/user.dart';
 
 class AuthApi {
   final Dio dio;
   AuthApi(this.dio);
 
   Future<Token> register(String name, String password) async {
-    final res = await dio.post(
-      '/register',
-      data: {
-        'name': name,
-        'pwd': password,
-      },
-    );
-    return Token.fromJson(res.data);
+    try {
+      final res = await dio.post(
+        '/auth/register',
+        data: {'name': name, 'pwd': password},
+      );
+      return Token.fromJson(res.data);
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final errorData = e.response!.data;
+        final errorMessage = errorData['error'] ?? 'Registration failed';
+        throw Exception(errorMessage);
+      }
+      throw Exception('Network error occurred');
+    } catch (e) {
+      throw Exception('An unexpected error occurred');
+    }
   }
 
-  Future<User> login(String name, String password) async {
-    final res = await dio.post(
-      '/login',
-      data: {
-        'name': name,
-        'pwd': password,
-      },
-    );
-    return User.fromJson(res.data);
+  Future<Token> login(String name, String password) async {
+    try {
+      final res = await dio.post(
+        '/auth/login',
+        data: {'name': name, 'pwd': password},
+      );
+      return Token.fromJson(res.data);
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        final errorData = e.response!.data;
+        final errorMessage = errorData['error'] ?? 'Login failed';
+        throw Exception(errorMessage);
+      }
+      throw Exception('Network error occurred');
+    } catch (e) {
+      throw Exception('An unexpected error occurred');
+    }
   }
 }

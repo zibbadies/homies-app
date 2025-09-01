@@ -4,15 +4,19 @@ import 'package:homies/extensions/theme_extension.dart';
 class HButton extends StatelessWidget {
   const HButton({
     super.key,
-    required this.text,
+    this.text = "",
     required this.color,
     this.textColor,
+    this.loading = false,
+    this.loadingColor,
     required this.onPressed,
   });
 
   final String text;
   final Color color;
   final Color? textColor;
+  final bool loading;
+  final Color? loadingColor;
   final VoidCallback onPressed;
 
   @override
@@ -31,9 +35,12 @@ class HButton extends StatelessWidget {
       ),
       child: SizedBox(
         width: double.infinity,
-        // TODO: farlo bene con InkWell
         child: TextButton(
-          onPressed: onPressed,
+          onPressed: () {
+            // unfocus all before the callback
+            FocusScope.of(context).unfocus();
+            onPressed();
+          },
           style: TextButton.styleFrom(
             backgroundColor: color,
             foregroundColor: textColor ?? context.colors.onSurface,
@@ -43,15 +50,23 @@ class HButton extends StatelessWidget {
             ),
             fixedSize: const Size(double.infinity, 48),
           ),
-          child: Text(
-            text,
-            style: context.texts.labelLarge!.copyWith(
-              color: textColor ?? context.colors.onSurface,
-            ),
-          ),
+          child: loading
+              ? SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: loadingColor ?? context.colors.onPrimary,
+                    strokeWidth: 3,
+                  ),
+                )
+              : Text(
+                  text,
+                  style: context.texts.labelLarge!.copyWith(
+                    color: textColor ?? context.colors.onSurface,
+                  ),
+                ),
         ),
       ),
     );
   }
 }
-

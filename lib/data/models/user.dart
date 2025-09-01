@@ -1,13 +1,15 @@
 class User {
   final String name;
-  final String token;
+  final String avatar;
+  final String house;
 
-  User({required this.name, required this.token});
+  User({required this.name, required this.avatar, required this.house});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       name: json['name'],
-      token: json['token'],
+      avatar: json['avatar'],
+      house: json['house'],
     );
   }
 }

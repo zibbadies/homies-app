@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:homies/data/models/credentials.dart';
-import 'package:homies/data/models/token.dart';
-import 'package:homies/data/models/user.dart';
+import 'package:homies/data/models/auth_state.dart';
 import 'package:homies/data/repos/auth_repo.dart';
 import 'package:homies/data/sources/auth_api.dart';
 import 'package:homies/providers/dio_provider.dart';
@@ -15,23 +13,54 @@ final authRepositoryProvider = Provider(
   ),
 );
 
-final loginProvider = FutureProvider.autoDispose.family<User, Credentials>((
-  ref,
-  credentials,
-) {
-  final repo = ref.watch(authRepositoryProvider);
-  return repo.login(credentials.name, credentials.password);
-});
+class AuthNotifier extends AsyncNotifier<AuthState> {
+  AuthRepository get _repo => ref.read(authRepositoryProvider);
 
-final registerProvider = FutureProvider.autoDispose.family<Token, Credentials>((
-  ref,
-  credentials,
-) {
-  final repo = ref.watch(authRepositoryProvider);
-  return repo.register(credentials.name, credentials.password);
-});
+  @override
+  Future<AuthState> build() async {
+    final savedToken = await _repo.getToken();
 
-final tokenProvider = FutureProvider<String?>((ref) {
-  final repo = ref.watch(authRepositoryProvider);
-  return repo.getToken();
-});
+    if (savedToken != null) {
+      return AuthState(isAuthenticated: true, token: savedToken);
+    }
+    return const AuthState();
+  }
+
+  Future<void> login(String username, String password) async {
+    state = const AsyncLoading();
+
+    state = await AsyncValue.guard(() async {
+      final token = await _repo.login(username, password);
+      return AuthState(isAuthenticated: true, token: token.token);
+    });
+  }
+
+  Future<void> register(String username, String password) async {
+    state = const AsyncLoading();
+
+    state = await AsyncValue.guard(() async {
+      final token = await _repo.register(username, password);
+      return AuthState(isAuthenticated: true, token: token.token);
+    });
+  }
+
+  Future<void> logout() async {
+    await _repo.logout();
+    state = const AsyncData(AuthState(isAuthenticated: false));
+  }
+
+  void reset() {
+    state = const AsyncData(AuthState(isAuthenticated: false));
+  }
+
+  /*Future<void> refreshToken() async {
+      state = await AsyncValue.guard(() async {
+        final newToken = await _repo.refreshToken();
+        return AuthState(isAuthenticated: true, token: newToken);
+      });
+  }*/
+}
+
+final authProvider = AsyncNotifierProvider<AuthNotifier, AuthState>(
+  AuthNotifier.new,
+);

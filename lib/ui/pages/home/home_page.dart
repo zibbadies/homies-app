@@ -1,10 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:homies/extensions/theme_extension.dart';
+import 'package:homies/providers/auth_provider.dart';
+import 'package:homies/ui/components/h_button.dart';
+import 'package:homies/ui/components/h_title.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Text("Home"),);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authNotifier = ref.read(authProvider.notifier);
+
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              HTitle(text: "Home"),
+
+              SizedBox(height: 24),
+
+              HButton(
+                text: "Logout",
+                color: context.colors.secondary,
+                textColor: context.colors.onSecondary,
+                onPressed: () {
+                  authNotifier.logout();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

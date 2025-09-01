@@ -39,116 +39,179 @@ class _HLabeledInputState extends State<HLabeledInput> {
           padding: const EdgeInsets.only(left: 12, bottom: 2),
           child: Text(widget.label, style: context.texts.titleSmall),
         ),
+        TextFormField(
+          controller: widget.controller,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Cannot be empty.';
+            }
+            return null;
+          },
 
-        SizedBox(
-          height: 48,
-          child: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: context.colors.onSurface.withValues(alpha: 0.25),
-                  spreadRadius: 0,
-                  blurRadius: 2,
-                  offset: Offset(0, 1),
-                ),
-              ],
-              borderRadius: BorderRadius.circular(16),
+          obscureText: widget.obscurable ? obscured : false,
+
+          decoration: InputDecoration(
+            isDense: true,
+            contentPadding: EdgeInsets.only(left: 12),
+
+            filled: true,
+            fillColor: context.colors.surfaceContainer,
+            border: DecoratedInputBorder(
+              child: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+                borderSide: BorderSide.none,
+              ),
+              shadow: BoxShadow(
+                color: context.colors.onSurface.withValues(alpha: 0.25),
+                spreadRadius: 0,
+                blurRadius: 2,
+                offset: Offset(0, 1),
+              ),
             ),
-            child: TextFormField(
-              controller: widget.controller,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Cannot be empty.';
-                }
-                return null;
-              },
 
-              obscureText: widget.obscurable ? obscured : false,
+            hintText: widget.hint,
+            hintStyle: context.texts.bodyLarge!.copyWith(
+              color: context.colors.onSecondary.withValues(alpha: 0.6),
+            ),
 
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: context.colors.surfaceContainer,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(16)),
-                  borderSide: BorderSide.none,
-                ),
-                hintText: widget.hint,
-                hintStyle: context.texts.bodyLarge!.copyWith(
-                  color: context.colors.onSecondary.withValues(alpha: 0.6),
-                ),
+            errorStyle: context.texts.titleSmall!.copyWith(
+              color: context.colors.error,
+            ),
 
-                errorStyle: context.texts.titleSmall!.copyWith(
-                  color: context.colors.error,
-                ),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(
+                left: 12,
+                top: 12,
+                bottom: 12,
+                right: 4,
+              ),
+              child: Icon(Icons.person_rounded, size: 24),
+            ),
+            prefixIconColor: context.colors.onSurface,
+            prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 48),
 
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 12,
-                    top: 12,
-                    bottom: 12,
-                    right: 4,
-                  ),
-                  child: Icon(Icons.person_rounded, size: 24),
-                ),
-                prefixIconColor: context.colors.onSurface,
-                prefixIconConstraints: BoxConstraints(
-                  minWidth: 0,
-                  minHeight: 48,
-                ),
+            suffixIcon: widget.obscurable == true
+                ? ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: widget.controller,
+                    builder: (context, value, child) {
+                      if (value.text.isEmpty) {
+                        // because i can't call setState inside a Builder
+                        Future.microtask(() => obscured = true);
+                        return const SizedBox.shrink();
+                      }
 
-                suffixIcon: widget.obscurable == true
-                    ? ValueListenableBuilder<TextEditingValue>(
-                        valueListenable: widget.controller,
-                        builder: (context, value, child) {
-                          if (value.text.isEmpty) {
-                            // TODO: obscured reset when text is empty
-                            return const SizedBox.shrink();
-                          }
-
-                          return Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(
-                                16,
-                              ), // makes splash square
-                              onTap: () {
-                                setState(() {
-                                  obscured = !obscured;
-                                });
-                              },
-                              child: Container(
-                                width: 48, // square size
-                                height: 48,
-                                alignment: Alignment.center,
-                                child: Icon(
-                                  obscured
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  size: 24,
-                                ),
-                              ),
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            setState(() {
+                              obscured = !obscured;
+                            });
+                          },
+                          child: Container(
+                            width: 48, // square size
+                            height: 48,
+                            alignment: Alignment.center,
+                            child: Icon(
+                              obscured
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              size: 24,
                             ),
-                          );
-                        },
-                      )
-                    : null,
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : null,
 
-                suffixIconColor: context.colors.onSurface,
-                suffixIconConstraints: BoxConstraints(
-                  minWidth: 0,
-                  minHeight: 48,
-                ),
-              ),
-              style: context.texts.bodyLarge!.copyWith(
-                color: context.colors.onSurface,
-              ),
-              textAlignVertical: TextAlignVertical.center,
-            ),
+            suffixIconColor: context.colors.onSurface,
+            suffixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 48),
           ),
+          style: context.texts.bodyLarge!.copyWith(
+            color: context.colors.onSurface,
+          ),
+          textAlignVertical: TextAlignVertical.center,
         ),
       ],
+    );
+  }
+}
+
+// credits to: https://github.com/astoniocom/control_style/blob/master/lib/src/decorated_input_border.dart
+class DecoratedInputBorder extends InputBorder {
+  DecoratedInputBorder({required this.child, required this.shadow})
+    : super(borderSide: child.borderSide);
+
+  final InputBorder child;
+
+  final BoxShadow shadow;
+
+  @override
+  bool get isOutline => child.isOutline;
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      child.getInnerPath(rect, textDirection: textDirection);
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) =>
+      child.getOuterPath(rect, textDirection: textDirection);
+
+  @override
+  EdgeInsetsGeometry get dimensions => child.dimensions;
+
+  @override
+  InputBorder copyWith({
+    BorderSide? borderSide,
+    InputBorder? child,
+    BoxShadow? shadow,
+    bool? isOutline,
+  }) {
+    return DecoratedInputBorder(
+      child: (child ?? this.child).copyWith(borderSide: borderSide),
+      shadow: shadow ?? this.shadow,
+    );
+  }
+
+  @override
+  ShapeBorder scale(double t) {
+    final scalledChild = child.scale(t);
+
+    return DecoratedInputBorder(
+      child: scalledChild is InputBorder ? scalledChild : child,
+      shadow: BoxShadow.lerp(null, shadow, t)!,
+    );
+  }
+
+  @override
+  void paint(
+    Canvas canvas,
+    Rect rect, {
+    double? gapStart,
+    double gapExtent = 0.0,
+    double gapPercentage = 0.0,
+    TextDirection? textDirection,
+  }) {
+    final clipPath = Path()
+      ..addRect(const Rect.fromLTWH(-5000, -5000, 10000, 10000))
+      ..addPath(getInnerPath(rect), Offset.zero)
+      ..fillType = PathFillType.evenOdd;
+    canvas.clipPath(clipPath);
+
+    final Paint paint = shadow.toPaint();
+    final Rect bounds = rect.shift(shadow.offset).inflate(shadow.spreadRadius);
+
+    canvas.drawPath(getOuterPath(bounds), paint);
+
+    child.paint(
+      canvas,
+      rect,
+      gapStart: gapStart,
+      gapExtent: gapExtent,
+      gapPercentage: gapPercentage,
+      textDirection: textDirection,
     );
   }
 }
