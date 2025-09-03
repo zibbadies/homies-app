@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:homies/services/storage.dart';
+import 'package:homies/services/storage_service.dart';
 
 class DioClient {
   final Dio dio;

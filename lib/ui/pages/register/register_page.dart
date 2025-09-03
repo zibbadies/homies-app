@@ -84,7 +84,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
           ),
 
           SizedBox(height: 24),
-
+          
           HLabeledInput(
             label: "Username",
             hint: "Splarpo",

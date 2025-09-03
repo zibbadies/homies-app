@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:homies/providers/router_provider.dart';
-import 'package:homies/theme.dart';
+import 'package:homies/ui/theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {

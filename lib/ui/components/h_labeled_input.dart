@@ -77,7 +77,8 @@ class _HLabeledInputState extends State<HLabeledInput> {
             errorStyle: context.texts.titleSmall!.copyWith(
               color: context.colors.error,
             ),
-
+            
+            // TODO: Custom Icons 
             prefixIcon: Padding(
               padding: const EdgeInsets.only(
                 left: 12,

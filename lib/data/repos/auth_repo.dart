@@ -1,6 +1,6 @@
 import 'package:homies/data/models/token.dart';
 import 'package:homies/data/sources/auth_api.dart';
-import 'package:homies/services/storage.dart';
+import 'package:homies/services/storage_service.dart';
 
 class AuthRepository {
   final AuthApi api;
