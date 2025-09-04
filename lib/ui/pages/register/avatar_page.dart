@@ -28,12 +28,12 @@ class AvatarPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                HTitle(text: "CHOOSE\nYOUR AVATAR"),
+                HTitle(text: "Choose\nYour Avatar"),
 
                 SizedBox(height: 12),
 
                 Text(
-                  "Start by creating an account.",
+                  "You'll be this guy *forever*.",
                   style: context.texts.displaySmall,
                 ),
 

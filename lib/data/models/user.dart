@@ -1,15 +1,17 @@
-class User {
-  final String name;
-  final String avatar;
-  final String house;
+import 'package:homies/data/models/avatar.dart';
 
-  User({required this.name, required this.avatar, required this.house});
+class User {
+  final String uid;
+  final String name;
+  final Avatar avatar;
+
+  User({required this.uid, required this.name, required this.avatar});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      uid: json['uid'],
       name: json['name'],
       avatar: json['avatar'],
-      house: json['house'],
     );
   }
 }

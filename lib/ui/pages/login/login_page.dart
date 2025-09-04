@@ -39,10 +39,10 @@ class LoginForm extends ConsumerStatefulWidget {
   const LoginForm({super.key});
 
   @override
-  ConsumerState<LoginForm> createState() => _RegisterFormState();
+  ConsumerState<LoginForm> createState() => _LoginFormState();
 }
 
-class _RegisterFormState extends ConsumerState<LoginForm> {
+class _LoginFormState extends ConsumerState<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -74,7 +74,7 @@ class _RegisterFormState extends ConsumerState<LoginForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          HTitle(text: "WELCOME BACK"),
+          HTitle(text: "Welcome Back"),
 
           SizedBox(height: 12),
 

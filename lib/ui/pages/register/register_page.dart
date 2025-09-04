@@ -74,12 +74,12 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          HTitle(text: "WELCOME\nINTO HOMIES"),
+          HTitle(text: "Welcome\ninto Homies"),
 
           SizedBox(height: 12),
 
           Text(
-            "Start by creating an account.",
+            "Start by creating an account",
             style: context.texts.displaySmall,
           ),
 
