@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:homies/extensions/theme_extension.dart';
@@ -88,6 +89,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           HLabeledInput(
             label: "Username",
             hint: "Splarpo",
+            icon: LucideIcons.user_round,
             controller: usernameController,
           ),
 
@@ -96,6 +98,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           HLabeledInput(
             label: "Password",
             hint: "Pa\$\$w0rd",
+            icon: LucideIcons.lock,
             controller: passwordController,
             obscurable: true,
           ),

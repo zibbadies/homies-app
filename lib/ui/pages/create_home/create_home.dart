@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:homies/extensions/theme_extension.dart';
@@ -53,7 +54,6 @@ class _LoginFormState extends ConsumerState<CreateHomeForm> {
 
   @override
   Widget build(BuildContext context) {
-
     void handleCreate() {
       if (_formKey.currentState!.validate()) {
         // TODO
@@ -80,6 +80,7 @@ class _LoginFormState extends ConsumerState<CreateHomeForm> {
           HLabeledInput(
             label: "Home Name",
             hint: "Gli Splarponi",
+            icon: LucideIcons.house,
             controller: homeNameController,
           ),
 

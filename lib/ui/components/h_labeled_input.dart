@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:homies/extensions/theme_extension.dart';
 
 class HLabeledInput extends StatefulWidget {
@@ -6,12 +7,14 @@ class HLabeledInput extends StatefulWidget {
     super.key,
     required this.label,
     required this.hint,
+    required this.icon,
     required this.controller,
     this.obscurable = false,
   });
 
   final String label;
   final String hint;
+  final IconData icon;
   final TextEditingController controller;
   final bool obscurable;
 
@@ -77,8 +80,7 @@ class _HLabeledInputState extends State<HLabeledInput> {
             errorStyle: context.texts.titleSmall!.copyWith(
               color: context.colors.error,
             ),
-            
-            // TODO: Custom Icons 
+
             prefixIcon: Padding(
               padding: const EdgeInsets.only(
                 left: 12,
@@ -86,7 +88,7 @@ class _HLabeledInputState extends State<HLabeledInput> {
                 bottom: 12,
                 right: 4,
               ),
-              child: Icon(Icons.person_rounded, size: 24),
+              child: Icon(widget.icon, size: 24, color: context.colors.onSurface),
             ),
             prefixIconColor: context.colors.onSurface,
             prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 48),
@@ -116,9 +118,10 @@ class _HLabeledInputState extends State<HLabeledInput> {
                             alignment: Alignment.center,
                             child: Icon(
                               obscured
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
+                                  ? LucideIcons.eye
+                                  : LucideIcons.eye_closed,
                               size: 24,
+                              color: context.colors.onSurface,
                             ),
                           ),
                         ),

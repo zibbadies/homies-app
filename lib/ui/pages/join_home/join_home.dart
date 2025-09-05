@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:homies/extensions/theme_extension.dart';
@@ -53,7 +54,6 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
 
   @override
   Widget build(BuildContext context) {
-
     void handleJoin() {
       if (_formKey.currentState!.validate()) {
         // TODO
@@ -80,6 +80,7 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
           HLabeledInput(
             label: "Invite Code",
             hint: "XXXXXX",
+            icon: LucideIcons.house,
             controller: inviteCodeController,
           ),
 
