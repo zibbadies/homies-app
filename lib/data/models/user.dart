@@ -5,13 +5,9 @@ class User {
   final String name;
   final Avatar avatar;
 
-  User({required this.uid, required this.name, required this.avatar});
+  const User({required this.uid, required this.name, required this.avatar});
 
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      uid: json['uid'],
-      name: json['name'],
-      avatar: json['avatar'],
-    );
+    return User(uid: json['uid'], name: json['name'], avatar: json['avatar']);
   }
 }

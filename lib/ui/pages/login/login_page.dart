@@ -118,11 +118,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               );
             },
             loading: () => HButton(
-              text: "",
               color: context.colors.primary,
               loading: true,
               loadingColor: context.colors.onPrimary,
-              onPressed: () => handleLogin(),
             ),
             error: (error, stack) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,

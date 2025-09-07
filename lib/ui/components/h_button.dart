@@ -9,7 +9,7 @@ class HButton extends StatelessWidget {
     this.textColor,
     this.loading = false,
     this.loadingColor,
-    required this.onPressed,
+    this.onPressed,
   });
 
   final String text;
@@ -17,7 +17,7 @@ class HButton extends StatelessWidget {
   final Color? textColor;
   final bool loading;
   final Color? loadingColor;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class HButton extends StatelessWidget {
           onPressed: () {
             // unfocus all before the callback
             FocusScope.of(context).unfocus();
-            onPressed();
+            if (onPressed != null) onPressed!();
           },
           style: TextButton.styleFrom(
             backgroundColor: color,

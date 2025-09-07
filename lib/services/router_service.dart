@@ -3,6 +3,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 import "package:homies/providers/auth_provider.dart";
 import 'package:homies/ui/pages/create_home/create_home.dart';
+import 'package:homies/ui/pages/create_home/invite_after_create_home.dart';
 import 'package:homies/ui/pages/home/home_page.dart';
 import 'package:homies/ui/pages/join_home/join_home.dart';
 import 'package:homies/ui/pages/login/login_page.dart';
@@ -28,8 +29,19 @@ class RouterService {
       builder: (context, state) => const RegisterPage(),
     ),
     GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
-    GoRoute(path: '/create_home', builder: (context, state) => const CreateHomePage()),
-    GoRoute(path: '/join_home', builder: (context, state) => const JoinHomePage()),
+    GoRoute(
+      path: '/create_home',
+      builder: (context, state) => const CreateHomePage(),
+    ),
+    GoRoute(
+      path: '/invite_after_create',
+      builder: (context, state) =>
+          InviteAfterCreateHome(invite: state.extra as String),
+    ),
+    GoRoute(
+      path: '/join_home',
+      builder: (context, state) => const JoinHomePage(),
+    ),
   ];
 
   static String? _handleRedirect(
@@ -51,7 +63,8 @@ class RouterService {
         if (!isLoggedIn && !wantsToLogin) return '/welcome';
 
         // if (isLoggedIn && wantsToLogin) return '/';
-        if (isLoggedIn && wantsToLogin) return '/create_home'; // TODO: change this after HomeProvider
+        if (isLoggedIn && wantsToLogin)
+          return '/create_home'; // TODO: change this after HomeProvider
 
         return null;
       },

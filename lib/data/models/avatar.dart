@@ -9,7 +9,7 @@ class Avatar {
   final double reY;
   final String bezier;
 
-  Avatar({
+  const Avatar({
     required this.bgColor,
     required this.faceColor,
     required this.faceX,

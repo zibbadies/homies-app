@@ -3,9 +3,11 @@ import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:homies/extensions/theme_extension.dart';
+import 'package:homies/providers/home/create_home_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
+import 'package:homies/ui/pages/create_home/invite_after_create_home.dart';
 
 class CreateHomePage extends StatelessWidget {
   const CreateHomePage({super.key});
@@ -54,9 +56,12 @@ class _LoginFormState extends ConsumerState<CreateHomeForm> {
 
   @override
   Widget build(BuildContext context) {
+    final createHomeState = ref.watch(createHomeProvider);
+    final createHomeNotifier = ref.read(createHomeProvider.notifier);
+
     void handleCreate() {
       if (_formKey.currentState!.validate()) {
-        // TODO
+        createHomeNotifier.create(homeNameController.text.trim());
       }
     }
 
@@ -86,10 +91,47 @@ class _LoginFormState extends ConsumerState<CreateHomeForm> {
 
           SizedBox(height: 24),
 
-          HButton(
-            text: "Create",
-            color: context.colors.primary,
-            onPressed: () => handleCreate(),
+          createHomeState.when(
+            data: (invite) {
+              if (invite.invite != "") {
+                context.go('/invite_after_create', extra: invite.invite);
+              }
+
+              return Column(
+                children: [
+                  HButton(
+                    text: "Create",
+                    color: context.colors.primary,
+                    onPressed: () => handleCreate(),
+                  ),
+                ],
+              );
+            },
+            loading: () => HButton(
+              color: context.colors.primary,
+              loading: true,
+              loadingColor: context.colors.onPrimary,
+            ),
+            error: (error, stack) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (error.toString().isNotEmpty) ...[
+                  Text(
+                    error.toString().replaceFirst(RegExp(r'Exception: '), ''),
+                    style: context.texts.titleSmall!.copyWith(
+                      color: context.colors.error,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+
+                HButton(
+                  text: "Try Again",
+                  color: context.colors.primary,
+                  onPressed: () => handleCreate(),
+                ),
+              ],
+            ),
           ),
 
           SizedBox(height: 12),

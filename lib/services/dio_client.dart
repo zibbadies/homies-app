@@ -12,7 +12,7 @@ class DioClient {
         onRequest: (options, handler) async {
           final token = await storage.getToken();
           if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
+            options.headers['Authorization'] = token;
           }
           return handler.next(options);
         },

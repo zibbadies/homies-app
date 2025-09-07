@@ -118,11 +118,9 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
               );
             },
             loading: () => HButton(
-              text: "",
               color: context.colors.primary,
               loading: true,
               loadingColor: context.colors.onPrimary,
-              onPressed: () => handleRegister(),
             ),
             error: (error, stack) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
