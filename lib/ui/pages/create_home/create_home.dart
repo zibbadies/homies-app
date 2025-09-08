@@ -65,6 +65,14 @@ class _LoginFormState extends ConsumerState<CreateHomeForm> {
       }
     }
 
+    ref.listen(createHomeProvider, (previous, next) {
+      next.whenData((data) {
+        if (data.invite.isNotEmpty) {
+          context.go('/invite_after_create', extra: data.invite);
+        }
+      });
+    });
+
     return Form(
       key: _formKey,
       child: Column(
@@ -93,10 +101,6 @@ class _LoginFormState extends ConsumerState<CreateHomeForm> {
 
           createHomeState.when(
             data: (invite) {
-              if (invite.invite != "") {
-                context.go('/invite_after_create', extra: invite.invite);
-              }
-
               return Column(
                 children: [
                   HButton(

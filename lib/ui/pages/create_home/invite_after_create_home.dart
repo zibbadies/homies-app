@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
@@ -56,7 +57,7 @@ class InviteAfterCreateHome extends StatelessWidget {
                   text: "Continue",
                   color: context.colors.secondary,
                   textColor: context.colors.onSecondary,
-                  onPressed: () {},
+                  onPressed: () => context.go("/"),
                 ),
               ],
             ),

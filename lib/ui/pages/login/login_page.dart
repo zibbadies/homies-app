@@ -16,6 +16,7 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        automaticallyImplyLeading: false,
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         backgroundColor: context.colors.surface,
@@ -69,93 +70,105 @@ class _LoginFormState extends ConsumerState<LoginForm> {
       }
     }
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          HTitle(text: "Welcome Back"),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, Object? result) {
+        if (!authState.isLoading) {
+          context.go("/register");
+          authNotifier.reset();
+        }
+      },
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            HTitle(text: "Welcome Back"),
 
-          SizedBox(height: 12),
+            SizedBox(height: 12),
 
-          Text(
-            "Do you still remember your password?",
-            style: context.texts.displaySmall,
-          ),
+            Text(
+              "Do you still remember your password?",
+              style: context.texts.displaySmall,
+            ),
 
-          SizedBox(height: 24),
+            SizedBox(height: 24),
 
-          HLabeledInput(
-            label: "Username",
-            hint: "Splarpo",
-            icon: LucideIcons.user_round,
-            controller: usernameController,
-          ),
+            HLabeledInput(
+              label: "Username",
+              hint: "Splarpo",
+              icon: LucideIcons.user_round,
+              controller: usernameController,
+            ),
 
-          SizedBox(height: 8),
+            SizedBox(height: 8),
 
-          HLabeledInput(
-            label: "Password",
-            hint: "Pa\$\$w0rd",
-            icon: LucideIcons.lock,
-            controller: passwordController,
-            obscurable: true,
-          ),
+            HLabeledInput(
+              label: "Password",
+              hint: "Pa\$\$w0rd",
+              icon: LucideIcons.lock,
+              controller: passwordController,
+              obscurable: true,
+            ),
 
-          SizedBox(height: 24),
+            SizedBox(height: 24),
 
-          authState.when(
-            data: (auth) {
-              return Column(
+            authState.when(
+              data: (auth) {
+                return Column(
+                  children: [
+                    HButton(
+                      text: "Sign In",
+                      color: context.colors.primary,
+                      onPressed: () => handleLogin(),
+                    ),
+                  ],
+                );
+              },
+              loading: () => HButton(
+                color: context.colors.primary,
+                loading: true,
+                loadingColor: context.colors.onPrimary,
+              ),
+              error: (error, stack) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (error.toString().isNotEmpty) ...[
+                    Text(
+                      error.toString().replaceFirst(RegExp(r'Exception: '), ''),
+                      style: context.texts.titleSmall!.copyWith(
+                        color: context.colors.error,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
                   HButton(
-                    text: "Sign Up",
+                    text: "Try Again",
                     color: context.colors.primary,
                     onPressed: () => handleLogin(),
                   ),
                 ],
-              );
-            },
-            loading: () => HButton(
-              color: context.colors.primary,
-              loading: true,
-              loadingColor: context.colors.onPrimary,
+              ),
             ),
-            error: (error, stack) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (error.toString().isNotEmpty) ...[
-                  Text(
-                    error.toString().replaceFirst(RegExp(r'Exception: '), ''),
-                    style: context.texts.titleSmall!.copyWith(
-                      color: context.colors.error,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
 
-                HButton(
-                  text: "Try Again",
-                  color: context.colors.primary,
-                  onPressed: () => handleLogin(),
-                ),
-              ],
+            SizedBox(height: 12),
+
+            HButton(
+              text: "I don't have an account",
+              color: context.colors.secondary,
+              textColor: context.colors.onSecondary,
+              onPressed: () {
+                // you can be in this page only if u were in /register previously
+                if (!authState.isLoading) {
+                  context.go("/register");
+                  authNotifier.reset();
+                }
+              },
             ),
-          ),
-
-          SizedBox(height: 12),
-
-          HButton(
-            text: "I don't have an account",
-            color: context.colors.secondary,
-            textColor: context.colors.onSecondary,
-            onPressed: () {
-              authNotifier.reset();
-              context.go('/register');
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

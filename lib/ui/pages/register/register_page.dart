@@ -85,7 +85,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
           ),
 
           SizedBox(height: 24),
-          
+
           HLabeledInput(
             label: "Username",
             hint: "Splarpo",
@@ -151,8 +151,8 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
             color: context.colors.secondary,
             textColor: context.colors.onSecondary,
             onPressed: () {
-              authNotifier.reset();
               context.go('/login');
+              authNotifier.reset();
             },
           ),
         ],
