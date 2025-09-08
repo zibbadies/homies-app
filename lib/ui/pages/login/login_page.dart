@@ -71,11 +71,12 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     }
 
     return PopScope(
-      canPop: false,
+      canPop: !authState.isLoading,
       onPopInvokedWithResult: (didPop, Object? result) {
         if (!authState.isLoading) {
-          context.go("/register");
-          authNotifier.reset();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            authNotifier.reset();
+          });
         }
       },
       child: Form(
@@ -161,8 +162,8 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               textColor: context.colors.onSecondary,
               onPressed: () {
                 // you can be in this page only if u were in /register previously
-                if (!authState.isLoading) {
-                  context.go("/register");
+                if (!authState.isLoading && mounted && Navigator.canPop(context)) {
+                  context.pop();
                   authNotifier.reset();
                 }
               },

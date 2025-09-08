@@ -151,7 +151,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
             color: context.colors.secondary,
             textColor: context.colors.onSecondary,
             onPressed: () {
-              context.go('/login');
+              context.push('/login');
               authNotifier.reset();
             },
           ),
