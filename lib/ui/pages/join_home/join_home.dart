@@ -60,49 +60,57 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
       }
     }
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          HTitle(text: "Insert the\nInvite Code"),
+    return PopScope(
+      canPop: true, // TODO: is loading
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            HTitle(text: "Insert the\nInvite Code"),
 
-          SizedBox(height: 12),
+            SizedBox(height: 12),
 
-          Text(
-            "You can ask it to your friend",
-            style: context.texts.displaySmall,
-          ),
+            Text(
+              "You can ask it to your friend",
+              style: context.texts.displaySmall,
+            ),
 
-          SizedBox(height: 24),
+            SizedBox(height: 24),
 
-          HLabeledInput(
-            label: "Invite Code",
-            hint: "XXXXXX",
-            icon: LucideIcons.house,
-            controller: inviteCodeController,
-          ),
+            HLabeledInput(
+              label: "Invite Code",
+              hint: "XXXXXX",
+              icon: LucideIcons.house,
+              controller: inviteCodeController,
+            ),
 
-          SizedBox(height: 24),
+            SizedBox(height: 24),
 
-          HButton(
-            text: "Join",
-            color: context.colors.primary,
-            onPressed: () => handleJoin(),
-          ),
+            HButton(
+              text: "Join",
+              color: context.colors.primary,
+              onPressed: () => handleJoin(),
+            ),
 
-          SizedBox(height: 12),
+            SizedBox(height: 12),
 
-          HButton(
-            text: "Create a New Home",
-            color: context.colors.secondary,
-            textColor: context.colors.onSecondary,
-            onPressed: () {
-              context.go('/create_home');
-            },
-          ),
-        ],
+            HButton(
+              text: "Create a New Home",
+              color: context.colors.secondary,
+              textColor: context.colors.onSecondary,
+              onPressed: () {
+                // you can be in this page only if u were in /create_home previously
+
+                // TODO: add isLoading check on joinState
+                if (mounted && Navigator.canPop(context)) {
+                  context.pop();
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

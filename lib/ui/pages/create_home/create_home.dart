@@ -145,7 +145,7 @@ class _LoginFormState extends ConsumerState<CreateHomeForm> {
             color: context.colors.secondary,
             textColor: context.colors.onSecondary,
             onPressed: () {
-              context.go('/join_home');
+              context.push('/join_home');
             },
           ),
         ],
