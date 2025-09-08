@@ -13,11 +13,11 @@ class HomeApi {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
         final errorMessage = errorData['error'] ?? 'Creation failed';
-        throw Exception(errorMessage);
+        throw errorMessage;
       }
-      throw Exception('Network error occurred');
+      throw 'Network error occurred';
     } catch (e) {
-      throw Exception('An unexpected error occurred');
+      throw 'An unexpected error occurred';
     }
   }
 
@@ -30,11 +30,11 @@ class HomeApi {
         final errorData = e.response!.data;
         final errorMessage =
             errorData['error'] ?? 'An unexpected error occurred';
-        throw Exception(errorMessage);
+        throw errorMessage;
       }
-      throw Exception('Network error occurred');
+      throw 'Network error occurred';
     } catch (e) {
-      throw Exception('An unexpected error occurred');
+      throw 'An unexpected error occurred';
     }
   }
 
@@ -46,11 +46,11 @@ class HomeApi {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
         final errorMessage = errorData['error'] ?? 'Joining home has failed';
-        throw Exception(errorMessage);
+        throw errorMessage;
       }
-      throw Exception('Network error occurred');
+      throw 'Network error occurred';
     } catch (e) {
-      throw Exception('An unexpected error occurred');
+      throw 'An unexpected error occurred';
     }
   }
 }

@@ -16,11 +16,11 @@ class AuthApi {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
         final errorMessage = errorData['error'] ?? 'Registration failed';
-        throw Exception(errorMessage);
+        throw errorMessage;
       }
-      throw Exception('Network error occurred');
+      throw 'Network error occurred';
     } catch (e) {
-      throw Exception('An unexpected error occurred');
+      throw 'An unexpected error occurred';
     }
   }
 
@@ -35,11 +35,11 @@ class AuthApi {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
         final errorMessage = errorData['error'] ?? 'Login failed';
-        throw Exception(errorMessage);
+        throw errorMessage;
       }
-      throw Exception('Network error occurred');
+      throw 'Network error occurred';
     } catch (e) {
-      throw Exception('An unexpected error occurred');
+      throw 'An unexpected error occurred';
     }
   }
 }

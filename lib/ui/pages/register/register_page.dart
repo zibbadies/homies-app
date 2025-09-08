@@ -107,14 +107,10 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
 
           authState.when(
             data: (auth) {
-              return Column(
-                children: [
-                  HButton(
-                    text: "Sign Up",
-                    color: context.colors.primary,
-                    onPressed: () => handleRegister(),
-                  ),
-                ],
+              return HButton(
+                text: "Sign Up",
+                color: context.colors.primary,
+                onPressed: () => handleRegister(),
               );
             },
             loading: () => HButton(
@@ -127,7 +123,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
               children: [
                 if (error.toString().isNotEmpty) ...[
                   Text(
-                    error.toString().replaceFirst(RegExp(r'Exception: '), ''),
+                    error.toString(),
                     style: context.texts.titleSmall!.copyWith(
                       color: context.colors.error,
                     ),

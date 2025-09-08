@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
-import 'package:homies/providers/home/create_home_provider.dart';
+import 'package:homies/providers/home/home_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
-import 'package:homies/ui/pages/create_home/invite_after_create_home.dart';
 
 class CreateHomePage extends StatelessWidget {
   const CreateHomePage({super.key});
@@ -41,37 +41,34 @@ class CreateHomeForm extends ConsumerStatefulWidget {
   const CreateHomeForm({super.key});
 
   @override
-  ConsumerState<CreateHomeForm> createState() => _LoginFormState();
+  ConsumerState<CreateHomeForm> createState() => _CreateHomeFormState();
 }
 
-class _LoginFormState extends ConsumerState<CreateHomeForm> {
+class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
   final _formKey = GlobalKey<FormState>();
-  final homeNameController = TextEditingController();
+  final _homeNameController = TextEditingController();
+
+  String? _homeName;
 
   @override
   void dispose() {
-    homeNameController.dispose();
+    _homeNameController.dispose();
     super.dispose();
+  }
+
+  void _handleCreate() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _homeName = _homeNameController.text.trim();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final createHomeState = ref.watch(createHomeProvider);
-    final createHomeNotifier = ref.read(createHomeProvider.notifier);
-
-    void handleCreate() {
-      if (_formKey.currentState!.validate()) {
-        createHomeNotifier.create(homeNameController.text.trim());
-      }
-    }
-
-    ref.listen(createHomeProvider, (previous, next) {
-      next.whenData((data) {
-        if (data.invite.isNotEmpty) {
-          context.go('/invite_after_create', extra: data.invite);
-        }
-      });
-    });
+    final AsyncValue<Invite>? createHomeAsync = _homeName != null
+        ? ref.watch(createHomeProvider(_homeName!))
+        : null;
 
     return Form(
       key: _formKey,
@@ -94,49 +91,57 @@ class _LoginFormState extends ConsumerState<CreateHomeForm> {
             label: "Home Name",
             hint: "Gli Splarponi",
             icon: LucideIcons.house,
-            controller: homeNameController,
+            controller: _homeNameController,
           ),
 
           SizedBox(height: 24),
 
-          createHomeState.when(
-            data: (invite) {
-              return Column(
-                children: [
-                  HButton(
-                    text: "Create",
-                    color: context.colors.primary,
-                    onPressed: () => handleCreate(),
-                  ),
-                ],
-              );
-            },
-            loading: () => HButton(
-              color: context.colors.primary,
-              loading: true,
-              loadingColor: context.colors.onPrimary,
-            ),
-            error: (error, stack) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (error.toString().isNotEmpty) ...[
-                  Text(
-                    error.toString().replaceFirst(RegExp(r'Exception: '), ''),
-                    style: context.texts.titleSmall!.copyWith(
-                      color: context.colors.error,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-
-                HButton(
-                  text: "Try Again",
+          createHomeAsync == null
+              ? HButton(
+                  text: "Create",
                   color: context.colors.primary,
-                  onPressed: () => handleCreate(),
+                  onPressed: () => _handleCreate(),
+                )
+              : createHomeAsync.when(
+                  data: (invite) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (invite.code.isNotEmpty) {
+                        context.go('/invite_after_create', extra: invite.code);
+                      }
+                    });
+
+                    return HButton(
+                      text: "Create",
+                      color: context.colors.primary,
+                      onPressed: () => _handleCreate(),
+                    );
+                  },
+                  loading: () => HButton(
+                    color: context.colors.primary,
+                    loading: true,
+                    loadingColor: context.colors.onPrimary,
+                  ),
+                  error: (error, stack) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (error.toString().isNotEmpty) ...[
+                        Text(
+                          error.toString(),
+                          style: context.texts.titleSmall!.copyWith(
+                            color: context.colors.error,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+
+                      HButton(
+                        text: "Try Again",
+                        color: context.colors.primary,
+                        onPressed: () => _handleCreate(),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
 
           SizedBox(height: 12),
 
@@ -145,7 +150,9 @@ class _LoginFormState extends ConsumerState<CreateHomeForm> {
             color: context.colors.secondary,
             textColor: context.colors.onSecondary,
             onPressed: () {
-              context.push('/join_home');
+              if (createHomeAsync == null || !createHomeAsync.isLoading) {
+                context.push('/join_home');
+              }
             },
           ),
         ],

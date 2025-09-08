@@ -19,12 +19,12 @@ class Home {
 }
 
 class Invite {
-  final String invite;
+  final String code;
   
-  const Invite({required this.invite});
+  const Invite({required this.code});
 
   factory Invite.fromJson(Map<String, dynamic> json) {
-    return Invite(invite: json['invite']);
+    return Invite(code: json['invite']);
   }
 }
 

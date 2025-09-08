@@ -117,14 +117,10 @@ class _LoginFormState extends ConsumerState<LoginForm> {
 
             authState.when(
               data: (auth) {
-                return Column(
-                  children: [
-                    HButton(
-                      text: "Sign In",
-                      color: context.colors.primary,
-                      onPressed: () => handleLogin(),
-                    ),
-                  ],
+                return HButton(
+                  text: "Sign In",
+                  color: context.colors.primary,
+                  onPressed: () => handleLogin(),
                 );
               },
               loading: () => HButton(
@@ -137,7 +133,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                 children: [
                   if (error.toString().isNotEmpty) ...[
                     Text(
-                      error.toString().replaceFirst(RegExp(r'Exception: '), ''),
+                      error.toString(),
                       style: context.texts.titleSmall!.copyWith(
                         color: context.colors.error,
                       ),
@@ -162,7 +158,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               textColor: context.colors.onSecondary,
               onPressed: () {
                 // you can be in this page only if u were in /register previously
-                if (!authState.isLoading && mounted && Navigator.canPop(context)) {
+                if (!authState.isLoading &&
+                    mounted &&
+                    Navigator.canPop(context)) {
                   context.pop();
                   authNotifier.reset();
                 }
