@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
+import 'package:homies/providers/home_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
@@ -44,21 +46,29 @@ class JoinHomeForm extends ConsumerStatefulWidget {
 
 class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
   final _formKey = GlobalKey<FormState>();
-  final inviteCodeController = TextEditingController();
+  final _inviteCodeController = TextEditingController();
+
+  Invite? _invite;
 
   @override
   void dispose() {
-    inviteCodeController.dispose();
+    _inviteCodeController.dispose();
     super.dispose();
+  }
+
+  void _handleGetInviteInfo() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _invite = Invite(code: _inviteCodeController.text.trim());
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    void handleJoin() {
-      if (_formKey.currentState!.validate()) {
-        // TODO
-      }
-    }
+    final AsyncValue<InviteInfo>? inviteInfoAsync = _invite != null
+        ? ref.watch(inviteInfoProvider(_invite!))
+        : null;
 
     return PopScope(
       canPop: true, // TODO: is loading
@@ -83,16 +93,55 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
               label: "Invite Code",
               hint: "XXXXXX",
               icon: LucideIcons.house,
-              controller: inviteCodeController,
+              controller: _inviteCodeController,
             ),
 
             SizedBox(height: 24),
 
-            HButton(
-              text: "Join",
-              color: context.colors.primary,
-              onPressed: () => handleJoin(),
-            ),
+            inviteInfoAsync == null
+                ? HButton(
+                    text: "Join",
+                    color: context.colors.primary,
+                    onPressed: () => _handleGetInviteInfo(),
+                  )
+                : inviteInfoAsync.when(
+                    data: (inviteInfo) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        context.go('/join_confirm', extra: _invite);
+                      });
+
+                      return HButton(
+                        text: "Join",
+                        color: context.colors.primary,
+                        onPressed: () => _handleGetInviteInfo(),
+                      );
+                    },
+                    loading: () => HButton(
+                      color: context.colors.primary,
+                      loading: true,
+                      loadingColor: context.colors.onPrimary,
+                    ),
+                    error: (error, stack) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (error.toString().isNotEmpty) ...[
+                          Text(
+                            error.toString(),
+                            style: context.texts.titleSmall!.copyWith(
+                              color: context.colors.error,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+
+                        HButton(
+                          text: "Try Again",
+                          color: context.colors.primary,
+                          onPressed: () => _handleGetInviteInfo(),
+                        ),
+                      ],
+                    ),
+                  ),
 
             SizedBox(height: 12),
 

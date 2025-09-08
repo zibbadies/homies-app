@@ -21,9 +21,9 @@ class HomeApi {
     }
   }
 
-  Future<InviteInfo> getInviteInfo(String invite) async {
+  Future<InviteInfo> getInviteInfo(Invite invite) async {
     try {
-      final res = await dio.get('/house/$invite');
+      final res = await dio.get('/house/${invite.code}');
       return InviteInfo.fromJson(res.data);
     } on DioException catch (e) {
       if (e.response?.data != null) {
@@ -38,9 +38,9 @@ class HomeApi {
     }
   }
 
-  Future<bool> join(String invite) async {
+  Future<bool> join(Invite invite) async {
     try {
-      await dio.post('/house/$invite');
+      await dio.post('/house/${invite.code}');
       return true;
     } on DioException catch (e) {
       if (e.response?.data != null) {

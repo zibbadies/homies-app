@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
-import 'package:homies/providers/home/home_provider.dart';
+import 'package:homies/providers/home_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
@@ -106,7 +106,7 @@ class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
                   data: (invite) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (invite.code.isNotEmpty) {
-                        context.go('/invite_after_create', extra: invite.code);
+                        context.go('/invite_after_create', extra: invite);
                       }
                     });
 

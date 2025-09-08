@@ -9,7 +9,15 @@ final homeRepositoryProvider = Provider(
   (ref) => HomeRepository(ref.watch(homeApiProvider)),
 );
 
-
 final createHomeProvider = FutureProvider.family<Invite, String>(
   (ref, name) => ref.read(homeRepositoryProvider).create(name),
 );
+
+final inviteInfoProvider = FutureProvider.family<InviteInfo, Invite>(
+  (ref, invite) => ref.read(homeRepositoryProvider).getInviteInfo(invite),
+);
+
+final joinHomeProvider = FutureProvider.family<bool, Invite>(
+  (ref, invite) => ref.read(homeRepositoryProvider).join(invite),
+);
+

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
+import 'package:homies/data/models/home.dart';
 import "package:homies/providers/auth_provider.dart";
 import 'package:homies/ui/pages/create_home/create_home.dart';
 import 'package:homies/ui/pages/create_home/invite_after_create_home.dart';
 import 'package:homies/ui/pages/home/home_page.dart';
+import 'package:homies/ui/pages/join_home/join_confirm.dart';
 import 'package:homies/ui/pages/join_home/join_home.dart';
 import 'package:homies/ui/pages/login/login_page.dart';
 import 'package:homies/ui/pages/register/register_page.dart';
@@ -36,11 +38,16 @@ class RouterService {
     GoRoute(
       path: '/invite_after_create',
       builder: (context, state) =>
-          InviteAfterCreateHome(invite: state.extra as String),
+          InviteAfterCreateHome(invite: state.extra as Invite),
     ),
     GoRoute(
       path: '/join_home',
       builder: (context, state) => const JoinHomePage(),
+    ),
+    GoRoute(
+      path: '/join_confirm',
+      builder: (context, state) =>
+          JoinConfirm(invite: state.extra as Invite),
     ),
   ];
 

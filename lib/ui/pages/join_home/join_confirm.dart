@@ -1,0 +1,97 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:homies/data/models/home.dart';
+import 'package:homies/extensions/theme_extension.dart';
+import 'package:homies/providers/home_provider.dart';
+import 'package:homies/ui/components/h_button.dart';
+import 'package:homies/ui/components/h_title.dart';
+
+class JoinConfirm extends ConsumerWidget {
+  final Invite invite;
+
+  const JoinConfirm({super.key, required this.invite});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final AsyncValue<InviteInfo> inviteInfoAsync = ref.watch(
+      inviteInfoProvider(invite),
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        scrolledUnderElevation: 1,
+        surfaceTintColor: context.colors.surface,
+        backgroundColor: context.colors.surface,
+        shadowColor: context.colors.onSurface.withValues(
+          alpha: 0.25,
+        ), // Shadow color
+      ),
+      backgroundColor: context.colors.surface,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                inviteInfoAsync.when(
+                  data: (inviteInfo) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        HTitle(
+                          text: "You are going to join ${inviteInfo.name}",
+                        ),
+
+                        SizedBox(height: 12),
+
+                        Text(
+                          "Do you know these folks?",
+                          style: context.texts.displaySmall,
+                        ),
+
+                        SizedBox(height: 36),
+
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: inviteInfo.members.length,
+                          itemBuilder: (context, index) => Text(
+                            inviteInfo.members[index].name,
+                            style: context.texts.displaySmall,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  error: (error, stack) => Text("error"), // TODO: handle redirect
+                  loading: () => Text("loading"),
+                ),
+
+                SizedBox(height: 36),
+                
+                HButton(
+                  text: "Confirm and Join",
+                  color: context.colors.primary,
+                  onPressed: () {},
+                ),
+
+                SizedBox(height: 12),
+
+                HButton(
+                  text: "Cancel",
+                  color: context.colors.secondary,
+                  textColor: context.colors.onSecondary,
+                  onPressed: () => context.go("/join_home"),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

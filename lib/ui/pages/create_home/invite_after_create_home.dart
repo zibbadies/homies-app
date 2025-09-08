@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 
 class InviteAfterCreateHome extends StatelessWidget {
-  final String invite;
+  final Invite invite;
 
   const InviteAfterCreateHome({super.key, required this.invite});
 
@@ -41,7 +42,7 @@ class InviteAfterCreateHome extends StatelessWidget {
 
                 SizedBox(height: 36),
 
-                Text(invite, style: context.texts.headlineLarge),
+                Text(invite.code, style: context.texts.headlineLarge),
 
                 SizedBox(height: 36),
 

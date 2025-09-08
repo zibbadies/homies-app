@@ -12,13 +12,13 @@ class HomeRepository {
     return invite;
   }
 
-  Future<bool> join(String invite) async {
+  Future<bool> join(Invite invite) async {
     final success = await api.join(invite);
 
     return success;
   }
 
-  Future<InviteInfo> getInviteInfo(String invite) async {
+  Future<InviteInfo> getInviteInfo(Invite invite) async {
     final inviteInfo = await api.getInviteInfo(invite);
 
     return inviteInfo;
