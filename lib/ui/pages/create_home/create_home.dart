@@ -150,9 +150,8 @@ class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
             color: context.colors.secondary,
             textColor: context.colors.onSecondary,
             onPressed: () {
-              if (createHomeAsync == null || !createHomeAsync.isLoading) {
-                context.push('/join_home');
-              }
+              if (createHomeAsync != null && createHomeAsync.isLoading) return;
+              context.push('/join_home');
             },
           ),
         ],

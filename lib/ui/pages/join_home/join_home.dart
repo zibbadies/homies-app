@@ -10,13 +10,16 @@ import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
 
 class JoinHomePage extends StatelessWidget {
-  const JoinHomePage({super.key});
+  const JoinHomePage({super.key, this.invite});
+
+  final Invite? invite;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        automaticallyImplyLeading: false,
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         backgroundColor: context.colors.surface,
@@ -29,7 +32,7 @@ class JoinHomePage extends StatelessWidget {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: JoinHomeForm(),
+            child: JoinHomeForm(invite: invite),
           ),
         ),
       ),
@@ -38,7 +41,9 @@ class JoinHomePage extends StatelessWidget {
 }
 
 class JoinHomeForm extends ConsumerStatefulWidget {
-  const JoinHomeForm({super.key});
+  const JoinHomeForm({super.key, this.invite});
+
+  final Invite? invite;
 
   @override
   ConsumerState<JoinHomeForm> createState() => _JoinHomeFormState();
@@ -49,6 +54,16 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
   final _inviteCodeController = TextEditingController();
 
   Invite? _invite;
+
+  @override
+  void initState() {
+    _invite = widget.invite;
+
+    if (_invite?.code.isNotEmpty == true) {
+      _inviteCodeController.text = _invite!.code;
+    }
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -71,7 +86,7 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
         : null;
 
     return PopScope(
-      canPop: true, // TODO: is loading
+      canPop: inviteInfoAsync != null ? !inviteInfoAsync.isLoading : true,
       child: Form(
         key: _formKey,
         child: Column(
@@ -107,7 +122,7 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
                 : inviteInfoAsync.when(
                     data: (inviteInfo) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        context.go('/join_confirm', extra: _invite);
+                        context.go('/join_confirm', extra: _invite); // TODO: should i change to push?
                       });
 
                       return HButton(
@@ -121,26 +136,28 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
                       loading: true,
                       loadingColor: context.colors.onPrimary,
                     ),
-                    error: (error, stack) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (error.toString().isNotEmpty) ...[
-                          Text(
-                            error.toString(),
-                            style: context.texts.titleSmall!.copyWith(
-                              color: context.colors.error,
+                    error: (error, stack) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (error.toString().isNotEmpty) ...[
+                            Text(
+                              error.toString(),
+                              style: context.texts.titleSmall!.copyWith(
+                                color: context.colors.error,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                        ],
+                            const SizedBox(height: 24),
+                          ],
 
-                        HButton(
-                          text: "Try Again",
-                          color: context.colors.primary,
-                          onPressed: () => _handleGetInviteInfo(),
-                        ),
-                      ],
-                    ),
+                          HButton(
+                            text: "Try Again",
+                            color: context.colors.primary,
+                            onPressed: () => _handleGetInviteInfo(),
+                          ),
+                        ],
+                      );
+                    },
                   ),
 
             SizedBox(height: 12),
@@ -150,12 +167,12 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
               color: context.colors.secondary,
               textColor: context.colors.onSecondary,
               onPressed: () {
-                // you can be in this page only if u were in /create_home previously
-
-                // TODO: add isLoading check on joinState
-                if (mounted && Navigator.canPop(context)) {
-                  context.pop();
+              print(inviteInfoAsync?.isLoading);
+                if (inviteInfoAsync != null && !inviteInfoAsync.isLoading) {
+                  return;
                 }
+                if (Navigator.canPop(context)) return context.pop();
+                context.go("/create_home");
               },
             ),
           ],

@@ -42,12 +42,17 @@ class RouterService {
     ),
     GoRoute(
       path: '/join_home',
-      builder: (context, state) => const JoinHomePage(),
+      builder: (context, state) {
+        if (state.extra is Invite) {
+          return JoinHomePage(invite: state.extra as Invite);
+        } else {
+          return JoinHomePage();
+        }
+      },
     ),
     GoRoute(
       path: '/join_confirm',
-      builder: (context, state) =>
-          JoinConfirm(invite: state.extra as Invite),
+      builder: (context, state) => JoinConfirm(invite: state.extra as Invite),
     ),
   ];
 

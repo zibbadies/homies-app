@@ -157,13 +157,15 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               color: context.colors.secondary,
               textColor: context.colors.onSecondary,
               onPressed: () {
-                // you can be in this page only if u were in /register previously
-                if (!authState.isLoading &&
-                    mounted &&
-                    Navigator.canPop(context)) {
-                  context.pop();
-                  authNotifier.reset();
+                if (authState.isLoading ||
+                    !mounted ||
+                    !Navigator.canPop(context)) {
+                  return;
                 }
+                
+                // you can be in this page only if u were in /register previously
+                context.pop();
+                authNotifier.reset();
               },
             ),
           ],

@@ -67,12 +67,18 @@ class JoinConfirm extends ConsumerWidget {
                       ],
                     );
                   },
-                  error: (error, stack) => Text("error"), // TODO: handle redirect
-                  loading: () => Text("loading"),
+                  error: (error, stack) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      context.go('/join_home', extra: invite);
+                    });
+
+                    return Text("error");
+                  },
+                  loading: () => Text("loading"), // handle better loading
                 ),
 
                 SizedBox(height: 36),
-                
+
                 HButton(
                   text: "Confirm and Join",
                   color: context.colors.primary,
