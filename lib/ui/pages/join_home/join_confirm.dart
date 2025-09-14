@@ -7,16 +7,32 @@ import 'package:homies/providers/home_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 
-class JoinConfirm extends ConsumerWidget {
+class JoinConfirm extends ConsumerStatefulWidget {
   final Invite invite;
 
   const JoinConfirm({super.key, required this.invite});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<JoinConfirm> createState() => _JoinConfirmState();
+}
+
+class _JoinConfirmState extends ConsumerState<JoinConfirm> {
+  bool _confirmed = false;
+
+  void _handleConfirm() {
+    setState(() {
+      _confirmed = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final AsyncValue<InviteInfo> inviteInfoAsync = ref.watch(
-      inviteInfoProvider(invite),
+      inviteInfoProvider(widget.invite),
     );
+    final AsyncValue<bool>? joinHomeAsync = _confirmed
+        ? ref.watch(joinHomeProvider(widget.invite))
+        : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -30,7 +46,9 @@ class JoinConfirm extends ConsumerWidget {
       ),
       backgroundColor: context.colors.surface,
       body: PopScope(
-        canPop: !inviteInfoAsync.isLoading,
+        canPop:
+            !inviteInfoAsync.isLoading &&
+            (joinHomeAsync == null || !joinHomeAsync.isLoading),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -71,7 +89,7 @@ class JoinConfirm extends ConsumerWidget {
                     },
                     error: (error, stack) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        context.go('/join_home', extra: invite);
+                        context.go('/join_home', extra: widget.invite);
                       });
 
                       return Text("error");
@@ -81,11 +99,55 @@ class JoinConfirm extends ConsumerWidget {
 
                   SizedBox(height: 36),
 
-                  HButton(
-                    text: "Confirm and Join",
-                    color: context.colors.primary,
-                    onPressed: () {},
-                  ),
+                  joinHomeAsync == null
+                      ? HButton(
+                          text: "Confirm and Join",
+                          color: context.colors.primary,
+                          onPressed: () => _handleConfirm(),
+                        )
+                      : joinHomeAsync.when(
+                          data: (success) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (success) {
+                                context.go('/');
+                              }
+                            });
+
+                            return HButton(
+                              text: "Confirm and Join",
+                              color: context.colors.primary,
+                              onPressed: () => _handleConfirm(),
+                            );
+                          },
+                          loading: () => HButton(
+                            color: context.colors.primary,
+                            loading: true,
+                            loadingColor: context.colors.onPrimary,
+                          ),
+                          error: (error, stack) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (error.toString().isNotEmpty) ...[
+                                Text(
+                                  error.toString(),
+                                  style: context.texts.titleSmall!.copyWith(
+                                    color: context.colors.error,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                              ],
+
+                              HButton(
+                                text: "Try Again",
+                                color: context.colors.primary,
+                                onPressed: () {
+                                  // ignore: unused_result
+                                  ref.refresh(joinHomeProvider(widget.invite));
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
 
                   SizedBox(height: 12),
 

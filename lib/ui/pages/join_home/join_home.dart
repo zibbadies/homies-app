@@ -86,7 +86,7 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
         : null;
 
     return PopScope(
-      canPop: inviteInfoAsync != null ? !inviteInfoAsync.isLoading : true,
+      canPop: inviteInfoAsync == null || !inviteInfoAsync.isLoading,
       child: Form(
         key: _formKey,
         child: Column(
