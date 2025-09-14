@@ -44,7 +44,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     });
   }
 
-  Future<void> logout() async {
+  void logout() async {
     await _repo.logout();
     state = const AsyncData(AuthState(isAuthenticated: false));
   }

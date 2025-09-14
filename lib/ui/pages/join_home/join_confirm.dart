@@ -29,71 +29,80 @@ class JoinConfirm extends ConsumerWidget {
         ), // Shadow color
       ),
       backgroundColor: context.colors.surface,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                inviteInfoAsync.when(
-                  data: (inviteInfo) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        HTitle(
-                          text: "You are going to join ${inviteInfo.name}",
-                        ),
+      body: PopScope(
+        canPop: !inviteInfoAsync.isLoading,
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  inviteInfoAsync.when(
+                    data: (inviteInfo) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          HTitle(
+                            text: "You are going to join ${inviteInfo.name}",
+                          ),
 
-                        SizedBox(height: 12),
+                          SizedBox(height: 12),
 
-                        Text(
-                          "Do you know these folks?",
-                          style: context.texts.displaySmall,
-                        ),
-
-                        SizedBox(height: 36),
-
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: inviteInfo.members.length,
-                          itemBuilder: (context, index) => Text(
-                            inviteInfo.members[index].name,
+                          Text(
+                            "Do you know these folks?",
                             style: context.texts.displaySmall,
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                  error: (error, stack) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      context.go('/join_home', extra: invite);
-                    });
 
-                    return Text("error");
-                  },
-                  loading: () => Text("loading"), // handle better loading
-                ),
+                          SizedBox(height: 36),
 
-                SizedBox(height: 36),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: inviteInfo.members.length,
+                            itemBuilder: (context, index) => Text(
+                              inviteInfo.members[index].name,
+                              style: context.texts.displaySmall,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                    error: (error, stack) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        context.go('/join_home', extra: invite);
+                      });
 
-                HButton(
-                  text: "Confirm and Join",
-                  color: context.colors.primary,
-                  onPressed: () {},
-                ),
+                      return Text("error");
+                    },
+                    loading: () => Text("loading"), // handle better loading
+                  ),
 
-                SizedBox(height: 12),
+                  SizedBox(height: 36),
 
-                HButton(
-                  text: "Cancel",
-                  color: context.colors.secondary,
-                  textColor: context.colors.onSecondary,
-                  onPressed: () => context.go("/join_home"),
-                ),
-              ],
+                  HButton(
+                    text: "Confirm and Join",
+                    color: context.colors.primary,
+                    onPressed: () {},
+                  ),
+
+                  SizedBox(height: 12),
+
+                  HButton(
+                    text: "Cancel",
+                    color: context.colors.secondary,
+                    textColor: context.colors.onSecondary,
+                    onPressed: () {
+                      if (Navigator.canPop(context)) {
+                        context.pop();
+                      } else {
+                        context.go("/join_home");
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

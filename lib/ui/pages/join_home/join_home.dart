@@ -122,7 +122,7 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
                 : inviteInfoAsync.when(
                     data: (inviteInfo) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        context.go('/join_confirm', extra: _invite); // TODO: should i change to push?
+                        context.push('/join_confirm', extra: _invite);
                       });
 
                       return HButton(
