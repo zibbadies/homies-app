@@ -45,126 +45,117 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
         ), // Shadow color
       ),
       backgroundColor: context.colors.surface,
-      body: PopScope(
-        canPop:
-            !inviteInfoAsync.isLoading &&
-            (joinHomeAsync == null || !joinHomeAsync.isLoading),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  inviteInfoAsync.when(
-                    data: (inviteInfo) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          HTitle(
-                            text: "You are going to join ${inviteInfo.name}",
-                          ),
-
-                          SizedBox(height: 12),
-
-                          Text(
-                            "Do you know these folks?",
-                            style: context.texts.displaySmall,
-                          ),
-
-                          SizedBox(height: 36),
-
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: inviteInfo.members.length,
-                            itemBuilder: (context, index) => Text(
-                              inviteInfo.members[index].name,
-                              style: context.texts.displaySmall,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                    error: (error, stack) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        context.go('/join_home', extra: widget.invite);
-                      });
-
-                      return Text("error");
-                    },
-                    loading: () => Text("loading"), // handle better loading
-                  ),
-
-                  SizedBox(height: 36),
-
-                  joinHomeAsync == null
-                      ? HButton(
-                          text: "Confirm and Join",
-                          color: context.colors.primary,
-                          onPressed: () => _handleConfirm(),
-                        )
-                      : joinHomeAsync.when(
-                          data: (success) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (success) {
-                                context.go('/');
-                              }
-                            });
-
-                            return HButton(
-                              text: "Confirm and Join",
-                              color: context.colors.primary,
-                              onPressed: () => _handleConfirm(),
-                            );
-                          },
-                          loading: () => HButton(
-                            color: context.colors.primary,
-                            loading: true,
-                            loadingColor: context.colors.onPrimary,
-                          ),
-                          error: (error, stack) => Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (error.toString().isNotEmpty) ...[
-                                Text(
-                                  error.toString(),
-                                  style: context.texts.titleSmall!.copyWith(
-                                    color: context.colors.error,
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-                              ],
-
-                              HButton(
-                                text: "Try Again",
-                                color: context.colors.primary,
-                                onPressed: () {
-                                  // ignore: unused_result
-                                  ref.refresh(joinHomeProvider(widget.invite));
-                                },
-                              ),
-                            ],
-                          ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                inviteInfoAsync.when(
+                  data: (inviteInfo) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        HTitle(
+                          text: "You are going to join ${inviteInfo.name}",
                         ),
 
-                  SizedBox(height: 12),
+                        SizedBox(height: 12),
 
-                  HButton(
-                    text: "Cancel",
-                    color: context.colors.secondary,
-                    textColor: context.colors.onSecondary,
-                    onPressed: () {
-                      if (Navigator.canPop(context)) {
-                        context.pop();
-                      } else {
-                        context.go("/join_home");
-                      }
-                    },
-                  ),
-                ],
-              ),
+                        Text(
+                          "Do you know these folks?",
+                          style: context.texts.displaySmall,
+                        ),
+
+                        SizedBox(height: 36),
+
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: inviteInfo.members.length,
+                          itemBuilder: (context, index) => Text(
+                            inviteInfo.members[index].name,
+                            style: context.texts.displaySmall,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  error: (error, stack) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      context.go('/join_home', extra: widget.invite);
+                    });
+
+                    return Text("error");
+                  },
+                  loading: () => Text("loading"), // handle better loading
+                ),
+
+                SizedBox(height: 36),
+
+                joinHomeAsync == null
+                    ? HButton(
+                        text: "Confirm and Join",
+                        color: context.colors.primary,
+                        onPressed: () => _handleConfirm(),
+                      )
+                    : joinHomeAsync.when(
+                        data: (success) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (success) {
+                              context.go('/');
+                            }
+                          });
+
+                          return HButton(
+                            text: "Confirm and Join",
+                            color: context.colors.primary,
+                            onPressed: () => _handleConfirm(),
+                          );
+                        },
+                        loading: () => HButton(
+                          color: context.colors.primary,
+                          loading: true,
+                          loadingColor: context.colors.onPrimary,
+                        ),
+                        error: (error, stack) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (error.toString().isNotEmpty) ...[
+                              Text(
+                                error.toString(),
+                                style: context.texts.titleSmall!.copyWith(
+                                  color: context.colors.error,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+
+                            HButton(
+                              text: "Try Again",
+                              color: context.colors.primary,
+                              onPressed: () {
+                                // ignore: unused_result
+                                ref.refresh(joinHomeProvider(widget.invite));
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                SizedBox(height: 12),
+
+                HButton(
+                  text: "Cancel",
+                  color: context.colors.secondary,
+                  textColor: context.colors.onSecondary,
+                  onPressed: () {
+                    context.go("/join_home");
+                  },
+                ),
+              ],
             ),
           ),
         ),

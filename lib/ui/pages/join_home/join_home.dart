@@ -122,7 +122,8 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
                 : inviteInfoAsync.when(
                     data: (inviteInfo) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        context.push('/join_confirm', extra: _invite);
+                        // here i use .go to force the dispose of this widget
+                        context.go('/join_confirm', extra: _invite);
                       });
 
                       return HButton(
@@ -167,7 +168,7 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
               color: context.colors.secondary,
               textColor: context.colors.onSecondary,
               onPressed: () {
-              print(inviteInfoAsync?.isLoading);
+                print(inviteInfoAsync?.isLoading);
                 if (inviteInfoAsync != null && !inviteInfoAsync.isLoading) {
                   return;
                 }
