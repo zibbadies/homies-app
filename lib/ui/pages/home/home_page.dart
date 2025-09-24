@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/auth_provider.dart';
+import 'package:homies/providers/user_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 
@@ -11,6 +12,7 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authNotifier = ref.read(authProvider.notifier);
+    final overviewAsync = ref.watch(overviewProvider);
 
     return Scaffold(
       body: Center(
@@ -19,7 +21,11 @@ class HomePage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              HTitle(text: "Home"),
+              overviewAsync.when(
+                data: (overview) => HTitle(text: overview.home.name),
+                error: (e, _) => Text("Error $e"),
+                loading: () => Text("Loading"),
+              ),
 
               SizedBox(height: 24),
 
