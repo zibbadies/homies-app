@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:go_router/go_router.dart';
 import 'package:homies/providers/auth_provider.dart';
 import 'package:homies/services/storage_service.dart';
 
@@ -7,8 +8,10 @@ class DioClient {
   final SecureStorageService storage;
   final AuthNotifier authNotifier;
 
-  DioClient({required this.storage, required this.authNotifier})
-    : dio = Dio(BaseOptions(baseUrl: 'https://homies.sgrodolix.website')) {
+  DioClient({
+    required this.storage,
+    required this.authNotifier,
+  }) : dio = Dio(BaseOptions(baseUrl: 'https://homies.sgrodolix.website')) {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {

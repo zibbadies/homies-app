@@ -168,8 +168,7 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
               color: context.colors.secondary,
               textColor: context.colors.onSecondary,
               onPressed: () {
-                print(inviteInfoAsync?.isLoading);
-                if (inviteInfoAsync != null && !inviteInfoAsync.isLoading) {
+                if (inviteInfoAsync != null && inviteInfoAsync.isLoading) {
                   return;
                 }
                 if (Navigator.canPop(context)) return context.pop();
