@@ -8,7 +8,6 @@ class UserRepository {
 
   Future<Overview> getOverview() async {
     final overview = await api.getOverview();
-    print("daAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAai");
 
     return overview;
   }
