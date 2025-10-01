@@ -104,6 +104,7 @@ class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
                 )
               : createHomeAsync.when(
                   data: (invite) {
+                    print(invite.code);
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (invite.code.isNotEmpty) {
                         context.go('/invite_after_create', extra: invite);
@@ -137,7 +138,9 @@ class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
                       HButton(
                         text: "Try Again",
                         color: context.colors.primary,
-                        onPressed: () => _handleCreate(),
+                        onPressed: () {
+                          _handleCreate();
+                        },
                       ),
                     ],
                   ),
