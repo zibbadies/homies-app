@@ -3,7 +3,9 @@ import 'package:homies/data/models/auth_state.dart';
 import 'package:homies/data/repos/auth_repo.dart';
 import 'package:homies/data/sources/auth_api.dart';
 import 'package:homies/providers/dio_provider.dart';
+import 'package:homies/providers/home_provider.dart';
 import 'package:homies/providers/storage_provider.dart';
+import 'package:homies/providers/user_provider.dart';
 
 final authApiProvider = Provider((ref) => AuthApi(ref.watch(dioProvider)));
 final authRepositoryProvider = Provider(
@@ -44,13 +46,15 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     });
   }
 
-  void logout() async {
-    await _repo.logout();
+  void reset() {
+    ref.read(homeStateProvider.notifier).reset();
+    ref.invalidate(overviewProvider);
     state = const AsyncData(AuthState(isAuthenticated: false));
   }
 
-  void reset() {
-    state = const AsyncData(AuthState(isAuthenticated: false));
+  void logout() async {
+    await _repo.logout();
+    reset();
   }
 
   /*Future<void> refreshToken() async {

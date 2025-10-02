@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/overview.dart';
 
 class UserApi {
@@ -12,9 +13,7 @@ class UserApi {
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
-        final errorMessage =
-            errorData['error'] ?? 'An unexpected error occurred';
-        throw errorMessage;
+        throw ErrorWithCode.fromJson(errorData);
       }
       throw 'Network error occurred';
     } catch (e) {

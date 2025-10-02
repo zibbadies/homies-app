@@ -3,7 +3,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 import 'package:homies/data/models/home.dart';
 import "package:homies/providers/auth_provider.dart";
-import 'package:homies/providers/user_provider.dart';
+import 'package:homies/providers/home_provider.dart';
 import 'package:homies/ui/pages/create_home/create_home.dart';
 import 'package:homies/ui/pages/create_home/invite_after_create_home.dart';
 import 'package:homies/ui/pages/home/home_page.dart';
@@ -63,7 +63,7 @@ class RouterService {
     Ref ref,
   ) {
     final authState = ref.read(authProvider);
-    final overviewState = ref.read(overviewProvider);
+    final hasHome = ref.read(homeStateProvider);
 
     return authState.when(
       data: (authData) {
@@ -78,26 +78,26 @@ class RouterService {
           '/join_home',
           '/join_confirm',
         ].contains(state.matchedLocation);
-        
+
         // Not Logged in
         if (!isLoggedIn) {
           return wantsToLogin ? null : '/welcome';
         }
 
         // Logged in - check home status
-        return overviewState.when(
-          data: (overview) {
-            // Has home
-            if (wantsToLogin || isCreatingHome) return '/';
-            return null;
-          },
-          error: (e, _) {
-            // Hasn't home TODO: check the specific error for no_home
-            if (isCreatingHome || isJoiningHome) return null;
-            return '/create_home';
-          },
-          loading: () => null,
-        );
+        if (hasHome == true) {
+          // Has home - redirect away from auth/onboarding pages
+          if (wantsToLogin || isCreatingHome) return '/';
+          return null; // Allow normal navigation
+        } else if (hasHome == false) {
+          // No home - redirect to create/join unless already there
+          if (isCreatingHome || isJoiningHome) return null;
+          return '/create_home';
+        }
+
+        // hasHome == null (still loading/checking)
+        // Stay on current page while loading
+        return null;
       },
       error: (_, __) => null,
       loading: () => null,
@@ -109,6 +109,6 @@ class RouterService {
 class _GoRouterRefreshNotifier extends ChangeNotifier {
   _GoRouterRefreshNotifier(Ref ref) {
     ref.listen(authProvider, (_, __) => notifyListeners());
-    ref.listen(overviewProvider, (_, __) => notifyListeners());
+    ref.listen(homeStateProvider, (_, __) => notifyListeners());
   }
 }

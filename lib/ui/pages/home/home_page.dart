@@ -1,5 +1,3 @@
-// ignore_for_file: unused_result
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/extensions/theme_extension.dart';
@@ -60,40 +58,29 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
         ), // Shadow color
       ),
       backgroundColor: context.colors.surface,
-      body: Center(
-        child: Padding(
+      body: RefreshIndicator(
+        onRefresh: () => ref.refresh(overviewProvider.future),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              overviewAsync.when(
-                data: (overview) => HTitle(text: overview.home.name),
-                error: (e, _) => Text("Error $e"),
-                loading: () => Text("Loading"),
-              ),
+          children: [
+            overviewAsync.when(
+              data: (overview) => HTitle(text: overview.home.name),
+              error: (e, _) => Text("Error $e"),
+              loading: () => Text("Loading"),
+            ),
 
-              SizedBox(height: 24),
+            SizedBox(height: 24),
 
-              HButton(
-                text: "Refresh",
-                color: context.colors.primary,
-                onPressed: () {
-                  ref.refresh(overviewProvider);
-                },
-              ),
-
-              SizedBox(height: 12),
-
-              HButton(
-                text: "Logout",
-                color: context.colors.secondary,
-                textColor: context.colors.onSecondary,
-                onPressed: () {
-                  authNotifier.logout();
-                },
-              ),
-            ],
-          ),
+            HButton(
+              text: "Logout",
+              color: context.colors.secondary,
+              textColor: context.colors.onSecondary,
+              onPressed: () {
+                authNotifier.logout();
+              },
+            ),
+          ],
         ),
       ),
     );
