@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 import 'package:homies/data/models/home.dart';
-import "package:homies/providers/auth_provider.dart";
-import 'package:homies/providers/home_provider.dart';
+import 'package:homies/ui/components/auth_guard.dart';
 import 'package:homies/ui/pages/create_home/create_home.dart';
 import 'package:homies/ui/pages/create_home/invite_after_create_home.dart';
 import 'package:homies/ui/pages/home/home_page.dart';
@@ -15,19 +13,23 @@ import 'package:homies/ui/pages/welcome_page.dart';
 
 class RouterService {
   final GoRouter router;
-  final Ref ref;
+  final GlobalKey<NavigatorState> key;
 
-  RouterService({required this.ref})
+  RouterService({required this.key})
     : router = GoRouter(
+        navigatorKey: key,
         initialLocation: '/',
-        refreshListenable: _GoRouterRefreshNotifier(ref),
         routes: _routes,
-        redirect: (context, state) => _handleRedirect(context, state, ref),
       );
 
   static final _routes = [
-    GoRoute(path: '/', builder: (context, state) => const HomePage()),
+    GoRoute(
+      path: '/',
+      builder: (context, state) =>
+          const AuthGuard(fallbackRoute: '/welcome', child: HomePage()),
+    ),
     GoRoute(path: '/welcome', builder: (context, state) => const WelcomePage()),
+
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterPage(),
@@ -56,59 +58,4 @@ class RouterService {
       builder: (context, state) => JoinConfirm(invite: state.extra as Invite),
     ),
   ];
-
-  static String? _handleRedirect(
-    BuildContext context,
-    GoRouterState state,
-    Ref ref,
-  ) {
-    final authState = ref.read(authProvider);
-    final hasHome = ref.read(homeStateProvider);
-
-    return authState.when(
-      data: (authData) {
-        final isLoggedIn = authData.isAuthenticated;
-        final wantsToLogin = [
-          '/welcome',
-          '/register',
-          '/login',
-        ].contains(state.matchedLocation);
-        final isCreatingHome = state.matchedLocation == '/create_home';
-        final isJoiningHome = [
-          '/join_home',
-          '/join_confirm',
-        ].contains(state.matchedLocation);
-
-        // Not Logged in
-        if (!isLoggedIn) {
-          return wantsToLogin ? null : '/welcome';
-        }
-
-        // Logged in - check home status
-        if (hasHome == true) {
-          // Has home - redirect away from auth/onboarding pages
-          if (wantsToLogin || isCreatingHome) return '/';
-          return null; // Allow normal navigation
-        } else if (hasHome == false) {
-          // No home - redirect to create/join unless already there
-          if (isCreatingHome || isJoiningHome) return null;
-          return '/create_home';
-        }
-
-        // hasHome == null (still loading/checking)
-        // Stay on current page while loading
-        return null;
-      },
-      error: (_, __) => null,
-      loading: () => null,
-    );
-  }
-}
-
-// Add this class to make the router react to state changes
-class _GoRouterRefreshNotifier extends ChangeNotifier {
-  _GoRouterRefreshNotifier(Ref ref) {
-    ref.listen(authProvider, (_, __) => notifyListeners());
-    ref.listen(homeStateProvider, (_, __) => notifyListeners());
-  }
 }

@@ -27,13 +27,11 @@ class HomeStateNotifier extends Notifier<bool?> {
   @override
   bool? build() {
     // Watch overviewProvider and derive home state from it
-    final overviewState = ref.watch(overviewProvider);
-
+    final overviewState = ref.read(overviewProvider);
     return overviewState.when(
       data: (overview) => true,
       error: (e, __) {
         if (e is ErrorWithCode) {
-          print(e.code);
           return e.code != "user_not_in_house";
         }
         return true;

@@ -107,6 +107,13 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
 
           authState.when(
             data: (auth) {
+              print("dai forza");
+              if (auth.isAuthenticated) {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  context.go('/');
+                });
+              }
+
               return HButton(
                 text: "Sign Up",
                 color: context.colors.primary,
