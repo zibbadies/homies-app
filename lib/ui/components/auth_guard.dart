@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/providers/auth_provider.dart';
-
 import 'package:homies/ui/components/guard.dart';
 
 class AuthGuard extends ConsumerWidget {
-  final String fallbackRoute;
+  final VoidCallback fallback;
   final Widget child;
 
-  const AuthGuard({
-    super.key,
-    required this.fallbackRoute,
-    required this.child,
-  });
+  const AuthGuard({super.key, required this.fallback, required this.child});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +18,7 @@ class AuthGuard extends ConsumerWidget {
         error: (_, __) async => false,
         loading: () async => false,
       ),
-      fallbackRoute: fallbackRoute,
+      fallback: fallback,
       child: child,
     );
   }

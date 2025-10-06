@@ -1,4 +1,4 @@
-package com.example.homies
+package com.zibbadies.homies
 
 import io.flutter.embedding.android.FlutterActivity
 

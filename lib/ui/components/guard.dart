@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class Guard extends StatelessWidget {
   final Future<bool> canActivate;
   final Widget child;
-  final String fallbackRoute;
+  final VoidCallback fallback;
 
   const Guard({
     super.key,
-    // this is the condition to check within a Future as it can be async
     required this.canActivate,
-    // this is the child to display if the condition is met
     required this.child,
-    // this is the route to redirect if the condition is not met
-    required this.fallbackRoute,
+    required this.fallback,
   });
 
   @override
@@ -28,15 +24,13 @@ class Guard extends StatelessWidget {
         if (canActivate) {
           return child;
         }
-        redirect(context);
+        redirect();
         return Container();
       },
     );
   }
 
-  void redirect(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.pushReplacement(fallbackRoute);
-    });
+  void redirect() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) => fallback());
   }
 }

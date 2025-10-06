@@ -44,7 +44,6 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    final authNotifier = ref.read(authProvider.notifier);
     final overviewAsync = ref.watch(overviewProvider);
 
     return Scaffold(
@@ -77,7 +76,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
               color: context.colors.secondary,
               textColor: context.colors.onSecondary,
               onPressed: () {
-                authNotifier.logout();
+                ref.read(authProvider.notifier).logout();
               },
             ),
           ],

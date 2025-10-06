@@ -25,8 +25,10 @@ class RouterService {
   static final _routes = [
     GoRoute(
       path: '/',
-      builder: (context, state) =>
-          const AuthGuard(fallbackRoute: '/welcome', child: HomePage()),
+      builder: (context, state) => AuthGuard(
+        fallback: () => context.pushReplacement("/welcome"),
+        child: HomePage(),
+      ),
     ),
     GoRoute(path: '/welcome', builder: (context, state) => const WelcomePage()),
 
