@@ -109,7 +109,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
             data: (auth) {
               if (auth.isAuthenticated) {
                 WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  context.go('/');
+                    context.go('/');
                 });
               }
 

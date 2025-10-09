@@ -20,6 +20,7 @@ class DioClient {
           return handler.next(options);
         },
         onResponse: (response, handler) async {
+          // TODO: change to ErrorWithCode
           if (response.statusCode == 401) {
             ref.read(authProvider.notifier).logout();
           }

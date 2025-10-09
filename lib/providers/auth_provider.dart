@@ -25,6 +25,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     if (savedToken != null) {
       return AuthState(isAuthenticated: true, token: savedToken);
     }
+    
     return const AuthState();
   }
 
@@ -47,8 +48,8 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   }
 
   void reset() {
-    ref.read(homeStateProvider.notifier).reset();
-    ref.invalidate(overviewProvider);
+    // seocndo me non serve invalidare qua pero boh magari dopo non si sa mai
+    //ref.invalidate(overviewProvider);
     state = const AsyncData(AuthState(isAuthenticated: false));
   }
 
