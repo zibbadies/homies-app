@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/token.dart';
 
 class AuthApi {
@@ -15,12 +16,17 @@ class AuthApi {
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
-        final errorMessage = errorData['error'] ?? 'Registration failed';
-        throw errorMessage;
+        throw ErrorWithCode.fromJson(errorData);
       }
-      throw 'Network error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'Network error occurred',
+      );
     } catch (e) {
-      throw 'An unexpected error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'An unexpected error occured',
+      );
     }
   }
 
@@ -34,12 +40,17 @@ class AuthApi {
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
-        final errorMessage = errorData['error'] ?? 'Login failed';
-        throw errorMessage;
+        throw ErrorWithCode.fromJson(errorData);
       }
-      throw 'Network error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'Network error occurred',
+      );
     } catch (e) {
-      throw 'An unexpected error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'An unexpected error occured',
+      );
     }
   }
 }

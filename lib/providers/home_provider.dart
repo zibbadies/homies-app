@@ -1,10 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/home.dart';
 import 'package:homies/data/repos/home_repo.dart';
 import 'package:homies/data/sources/home_api.dart';
 import 'package:homies/providers/dio_provider.dart';
-import 'package:homies/providers/user_provider.dart';
 
 final homeApiProvider = Provider((ref) => HomeApi(ref.watch(dioProvider)));
 final homeRepositoryProvider = Provider(

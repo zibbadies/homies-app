@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/home.dart';
 
 class HomeApi {
@@ -12,12 +13,17 @@ class HomeApi {
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
-        final errorMessage = errorData['error'] ?? 'Creation failed';
-        throw errorMessage;
+        throw ErrorWithCode.fromJson(errorData);
       }
-      throw 'Network error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'Network error occurred',
+      );
     } catch (e) {
-      throw 'An unexpected error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'An unexpected error occured',
+      );
     }
   }
 
@@ -28,13 +34,17 @@ class HomeApi {
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
-        final errorMessage =
-            errorData['error'] ?? 'An unexpected error occurred';
-        throw errorMessage;
+        throw ErrorWithCode.fromJson(errorData);
       }
-      throw 'Network error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'Network error occurred',
+      );
     } catch (e) {
-      throw 'An unexpected error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'An unexpected error occured',
+      );
     }
   }
 
@@ -45,12 +55,17 @@ class HomeApi {
     } on DioException catch (e) {
       if (e.response?.data != null) {
         final errorData = e.response!.data;
-        final errorMessage = errorData['error'] ?? 'Joining home has failed';
-        throw errorMessage;
+        throw ErrorWithCode.fromJson(errorData);
       }
-      throw 'Network error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'Network error occurred',
+      );
     } catch (e) {
-      throw 'An unexpected error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'An unexpected error occured',
+      );
     }
   }
 }

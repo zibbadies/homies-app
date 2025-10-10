@@ -15,9 +15,15 @@ class UserApi {
         final errorData = e.response!.data;
         throw ErrorWithCode.fromJson(errorData);
       }
-      throw 'Network error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'Network error occurred',
+      );
     } catch (e) {
-      throw 'An unexpected error occurred';
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'An unexpected error occured',
+      );
     }
   }
 }

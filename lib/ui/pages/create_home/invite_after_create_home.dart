@@ -58,7 +58,7 @@ class InviteAfterCreateHome extends StatelessWidget {
                   text: "Continue",
                   color: context.colors.secondary,
                   textColor: context.colors.onSecondary,
-                  onPressed: () => context.go("/"),
+                  onPressed: () => context.go("/"), // TODO: fix here because it continue going to create_home
                 ),
               ],
             ),

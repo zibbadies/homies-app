@@ -7,6 +7,7 @@ import 'package:homies/providers/auth_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
+import 'package:homies/utils/redirect.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -108,9 +109,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
           authState.when(
             data: (auth) {
               if (auth.isAuthenticated) {
-                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                    context.go('/');
-                });
+                redirect(context, '/loading');
               }
 
               return HButton(

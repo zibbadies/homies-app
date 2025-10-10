@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/home_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
+import 'package:homies/utils/redirect.dart';
 
 class CreateHomePage extends StatelessWidget {
   const CreateHomePage({super.key});
@@ -104,7 +106,6 @@ class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
                 )
               : createHomeAsync.when(
                   data: (invite) {
-                    print(invite.code);
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (invite.code.isNotEmpty) {
                         context.go('/invite_after_create', extra: invite);
@@ -122,28 +123,34 @@ class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
                     loading: true,
                     loadingColor: context.colors.onPrimary,
                   ),
-                  error: (error, stack) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (error.toString().isNotEmpty) ...[
-                        Text(
-                          error.toString(),
-                          style: context.texts.titleSmall!.copyWith(
-                            color: context.colors.error,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
+                  error: (e, stack) {
+                    if (e is ErrorWithCode && e.code == "user_in_house") {
+                      redirect(context, "/");
+                    }
 
-                      HButton(
-                        text: "Try Again",
-                        color: context.colors.primary,
-                        onPressed: () {
-                          _handleCreate();
-                        },
-                      ),
-                    ],
-                  ),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (e is ErrorWithCode) ...[
+                          Text(
+                            e.message,
+                            style: context.texts.titleSmall!.copyWith(
+                              color: context.colors.error,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+
+                        HButton(
+                          text: "Try Again",
+                          color: context.colors.primary,
+                          onPressed: () {
+                            _handleCreate();
+                          },
+                        ),
+                      ],
+                    );
+                  },
                 ),
 
           SizedBox(height: 12),
