@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/home_provider.dart';
@@ -83,12 +84,25 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
                       ],
                     );
                   },
-                  error: (error, stack) {
+                  error: (e, stack) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       context.go('/join_home', extra: widget.invite);
                     });
 
-                    return Text("error");
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (e is ErrorWithCode) ...[
+                          Text(
+                            e.message,
+                            style: context.texts.titleSmall!.copyWith(
+                              color: context.colors.error,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      ],
+                    );
                   },
                   loading: () => Text("loading"), // handle better loading
                 ),
@@ -120,12 +134,12 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
                           loading: true,
                           loadingColor: context.colors.onPrimary,
                         ),
-                        error: (error, stack) => Column(
+                        error: (e, stack) => Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (error.toString().isNotEmpty) ...[
+                            if (e is ErrorWithCode) ...[
                               Text(
-                                error.toString(),
+                                e.message,
                                 style: context.texts.titleSmall!.copyWith(
                                   color: context.colors.error,
                                 ),
@@ -138,7 +152,8 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
                               color: context.colors.primary,
                               onPressed: () {
                                 // ignore: unused_result
-                                ref.refresh(joinHomeProvider(widget.invite));
+                                // ref.refresh(joinHomeProvider(widget.invite));
+                                _handleConfirm();
                               },
                             ),
                           ],

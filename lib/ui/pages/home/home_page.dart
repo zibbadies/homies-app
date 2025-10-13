@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:homies/data/models/error.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/auth_provider.dart';
 import 'package:homies/providers/user_provider.dart';
@@ -65,7 +66,20 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
           children: [
             overviewAsync.when(
               data: (overview) => HTitle(text: overview.home.name),
-              error: (e, _) => Text("Error $e"),
+              error: (e, stack) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (e is ErrorWithCode) ...[
+                    Text(
+                      e.message,
+                      style: context.texts.titleSmall!.copyWith(
+                        color: context.colors.error,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ],
+              ),
               loading: () => Text("Loading"),
             ),
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:homies/data/models/error.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/auth_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
@@ -123,12 +124,12 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
               loading: true,
               loadingColor: context.colors.onPrimary,
             ),
-            error: (error, stack) => Column(
+            error: (e, stack) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (error.toString().isNotEmpty) ...[
+                if (e is ErrorWithCode) ...[
                   Text(
-                    error.toString(),
+                    e.message,
                     style: context.texts.titleSmall!.copyWith(
                       color: context.colors.error,
                     ),
