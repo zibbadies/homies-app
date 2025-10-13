@@ -11,7 +11,7 @@ class HomeApi {
       final res = await dio.post('/house/create', data: {'name': name});
       return Invite.fromJson(res.data);
     } on DioException catch (e) {
-      if (e.response?.data != null) {
+      if (e.response?.data != null && e.response?.data is! String) {
         final errorData = e.response!.data;
         throw ErrorWithCode.fromJson(errorData);
       }
@@ -32,7 +32,7 @@ class HomeApi {
       final res = await dio.get('/house/${invite.code}');
       return InviteInfo.fromJson(res.data);
     } on DioException catch (e) {
-      if (e.response?.data != null) {
+      if (e.response?.data != null && e.response?.data is! String) {
         final errorData = e.response!.data;
         throw ErrorWithCode.fromJson(errorData);
       }
@@ -53,7 +53,7 @@ class HomeApi {
       await dio.post('/house/${invite.code}');
       return true;
     } on DioException catch (e) {
-      if (e.response?.data != null) {
+      if (e.response?.data != null && e.response?.data is! String) {
         final errorData = e.response!.data;
         throw ErrorWithCode.fromJson(errorData);
       }

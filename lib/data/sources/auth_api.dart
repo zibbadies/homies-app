@@ -14,7 +14,7 @@ class AuthApi {
       );
       return Token.fromJson(res.data);
     } on DioException catch (e) {
-      if (e.response?.data != null) {
+      if (e.response?.data != null && e.response?.data is! String) {
         final errorData = e.response!.data;
         throw ErrorWithCode.fromJson(errorData);
       }
@@ -38,7 +38,7 @@ class AuthApi {
       );
       return Token.fromJson(res.data);
     } on DioException catch (e) {
-      if (e.response?.data != null) {
+      if (e.response?.data != null && e.response?.data is! String) {
         final errorData = e.response!.data;
         throw ErrorWithCode.fromJson(errorData);
       }

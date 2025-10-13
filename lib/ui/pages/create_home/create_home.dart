@@ -121,7 +121,6 @@ class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
                   loading: () => HButton(
                     color: context.colors.primary,
                     loading: true,
-                    loadingColor: context.colors.onPrimary,
                   ),
                   error: (e, stack) {
                     if (e is ErrorWithCode && e.code == "user_in_house") {

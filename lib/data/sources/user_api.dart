@@ -11,7 +11,7 @@ class UserApi {
       final res = await dio.get('/user/me/overview');
       return Overview.fromJson(res.data);
     } on DioException catch (e) {
-      if (e.response?.data != null) {
+      if (e.response?.data != null && e.response?.data is! String) {
         final errorData = e.response!.data;
         throw ErrorWithCode.fromJson(errorData);
       }

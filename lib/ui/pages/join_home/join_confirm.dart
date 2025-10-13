@@ -105,7 +105,7 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
                         data: (success) {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (success) {
-                              context.go('/');
+                              context.go('/loading');
                             }
                           });
 

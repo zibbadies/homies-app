@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/home_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
+import 'package:homies/utils/redirect.dart';
 
 class JoinHomePage extends StatelessWidget {
   const JoinHomePage({super.key, this.invite});
@@ -137,13 +139,17 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
                       loading: true,
                       loadingColor: context.colors.onPrimary,
                     ),
-                    error: (error, stack) {
+                    error: (e, stack) {
+                      // here i should put a warn maybe idk
+                      //if (e is ErrorWithCode && e.code == "user_in_house") {
+                      //  redirect(context, "/");
+                      //}
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (error.toString().isNotEmpty) ...[
+                          if (e is ErrorWithCode) ...[
                             Text(
-                              error.toString(),
+                              e.message,
                               style: context.texts.titleSmall!.copyWith(
                                 color: context.colors.error,
                               ),
@@ -154,7 +160,9 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
                           HButton(
                             text: "Try Again",
                             color: context.colors.primary,
-                            onPressed: () => _handleGetInviteInfo(),
+                            onPressed: () {
+                              _handleGetInviteInfo();
+                            },
                           ),
                         ],
                       );
