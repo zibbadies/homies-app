@@ -5,6 +5,9 @@ class ErrorWithCode {
   const ErrorWithCode({required this.message, required this.code});
 
   factory ErrorWithCode.fromJson(Map<String, dynamic> json) {
-    return ErrorWithCode(message: json['error']['code'], code: json['error']['code']);
+    return ErrorWithCode(
+      message: json['error']['message'],
+      code: json['error']['code'],
+    );
   }
 }
