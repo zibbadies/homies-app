@@ -70,8 +70,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
                 children: [
                   HAvatar(
                     avatar: overview.user.avatar,
-                    width: 100,
-                    height: 100,
+                    size: 100,
                   ),
                   SizedBox(height: 24),
                   HTitle(text: overview.home.name),
@@ -98,8 +97,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: HAvatar(
                             avatar: member.avatar,
-                            width: 50,
-                            height: 50,
+                            size: 50,
                           ),
                         );
                       },

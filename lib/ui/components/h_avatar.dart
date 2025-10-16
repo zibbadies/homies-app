@@ -4,14 +4,12 @@ import 'package:homies/data/models/avatar.dart';
 
 class HAvatar extends StatelessWidget {
   final Avatar avatar;
-  final double width;
-  final double height;
+  final double size;
 
   const HAvatar({
     super.key,
     required this.avatar,
-    this.width = 100,
-    this.height = 100,
+    this.size = 100,
   });
 
   @override
@@ -28,6 +26,6 @@ class HAvatar extends StatelessWidget {
 </svg>
 ''';
 
-    return SvgPicture.string(svgData, width: width, height: height);
+    return SvgPicture.string(svgData, width: size, height: size);
   }
 }
