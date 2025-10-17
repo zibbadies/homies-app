@@ -8,6 +8,7 @@ import 'package:homies/providers/home_provider.dart';
 import 'package:homies/ui/components/h_avatar.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
+import 'package:homies/ui/components/settings_avatar_button.dart';
 
 class JoinConfirm extends ConsumerStatefulWidget {
   final Invite invite;
@@ -39,6 +40,9 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        actions: [
+          SettingsAvatarButton(),
+        ],
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         backgroundColor: context.colors.surface,
@@ -89,10 +93,7 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
                                   ),
                                   child: Column(
                                     children: [
-                                      HAvatar(
-                                        avatar: member.avatar,
-                                        size: 60,
-                                      ),
+                                      HAvatar(avatar: member.avatar, size: 60),
                                       SizedBox(height: 8),
                                       Text(
                                         member.name,

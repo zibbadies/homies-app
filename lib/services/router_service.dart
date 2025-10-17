@@ -11,6 +11,7 @@ import 'package:homies/ui/pages/join_home/join_home.dart';
 import 'package:homies/ui/pages/loading_page.dart';
 import 'package:homies/ui/pages/login/login_page.dart';
 import 'package:homies/ui/pages/register/register_page.dart';
+import 'package:homies/ui/pages/settings_page.dart';
 import 'package:homies/ui/pages/welcome_page.dart';
 
 class RouterService {
@@ -27,7 +28,7 @@ class RouterService {
   static final _routes = [
     GoRoute(path: '/loading', builder: (context, state) => const LoadingPage()),
     GoRoute(path: '/welcome', builder: (context, state) => const WelcomePage()),
-    
+
     GoRoute(
       path: '/',
       builder: (context, state) => const HomeGuard(child: HomePage()),
@@ -39,6 +40,10 @@ class RouterService {
     ),
     GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
 
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const AuthGuard(child: SettingsPage()),
+    ),
     GoRoute(
       path: '/create_home',
       builder: (context, state) => const AuthGuard(child: CreateHomePage()),

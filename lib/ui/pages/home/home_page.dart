@@ -7,6 +7,7 @@ import 'package:homies/providers/user_provider.dart';
 import 'package:homies/ui/components/h_avatar.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
+import 'package:homies/ui/components/settings_avatar_button.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -51,6 +52,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        actions: [SettingsAvatarButton()],
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         backgroundColor: context.colors.surface,
@@ -124,14 +126,6 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
 
             SizedBox(height: 24),
 
-            HButton(
-              text: "Logout",
-              color: context.colors.secondary,
-              textColor: context.colors.onSecondary,
-              onPressed: () {
-                ref.read(authProvider.notifier).logout();
-              },
-            ),
           ],
         ),
       ),

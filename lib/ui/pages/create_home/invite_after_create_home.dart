@@ -4,6 +4,7 @@ import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
+import 'package:homies/ui/components/settings_avatar_button.dart';
 
 class InviteAfterCreateHome extends StatelessWidget {
   final Invite invite;
@@ -15,6 +16,7 @@ class InviteAfterCreateHome extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        actions: [SettingsAvatarButton()],
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         backgroundColor: context.colors.surface,

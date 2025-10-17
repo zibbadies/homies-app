@@ -9,7 +9,7 @@ import 'package:homies/providers/home_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
-import 'package:homies/utils/redirect.dart';
+import 'package:homies/ui/components/settings_avatar_button.dart';
 
 class JoinHomePage extends StatelessWidget {
   const JoinHomePage({super.key, this.invite});
@@ -21,6 +21,7 @@ class JoinHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        actions: [SettingsAvatarButton()],
         automaticallyImplyLeading: false,
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,

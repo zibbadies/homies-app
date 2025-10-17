@@ -9,6 +9,7 @@ import 'package:homies/providers/home_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_labeled_input.dart';
+import 'package:homies/ui/components/settings_avatar_button.dart';
 import 'package:homies/utils/redirect.dart';
 
 class CreateHomePage extends StatelessWidget {
@@ -19,12 +20,11 @@ class CreateHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        actions: [SettingsAvatarButton()],
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         backgroundColor: context.colors.surface,
-        shadowColor: context.colors.onSurface.withValues(
-          alpha: 0.25,
-        ), // Shadow color
+        shadowColor: context.colors.onSurface.withValues(alpha: 0.25),
       ),
       backgroundColor: context.colors.surface,
       body: SafeArea(
@@ -118,10 +118,8 @@ class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
                       onPressed: () => _handleCreate(),
                     );
                   },
-                  loading: () => HButton(
-                    color: context.colors.primary,
-                    loading: true,
-                  ),
+                  loading: () =>
+                      HButton(color: context.colors.primary, loading: true),
                   error: (e, stack) {
                     if (e is ErrorWithCode && e.code == "user_in_house") {
                       redirect(context, "/");
