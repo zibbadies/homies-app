@@ -4,6 +4,7 @@ import 'package:homies/data/repos/auth_repo.dart';
 import 'package:homies/data/sources/auth_api.dart';
 import 'package:homies/providers/dio_provider.dart';
 import 'package:homies/providers/storage_provider.dart';
+import 'package:homies/providers/user_provider.dart';
 
 final authApiProvider = Provider((ref) => AuthApi(ref.watch(dioProvider)));
 final authRepositoryProvider = Provider(
@@ -47,7 +48,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
   void reset() {
     // seocndo me non serve invalidare qua pero boh magari dopo non si sa mai
-    //ref.invalidate(overviewProvider);
+    // TODO: per qualche motivo se invalido qui poi non autentica piu nulla
+    ref.invalidate(userProvider);
+    ref.invalidate(overviewProvider);
     state = const AsyncData(AuthState(isAuthenticated: false));
   }
 

@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:go_router/go_router.dart';
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:homies/data/models/error.dart";
 import "package:homies/providers/user_provider.dart";
 import "package:homies/ui/components/h_avatar.dart";
 
@@ -22,6 +23,9 @@ class SettingsAvatarButton extends StatelessWidget {
               child: HAvatar(avatar: user.avatar, size: 40),
             ),
             error: (e, _) {
+              if (e is ErrorWithCode && e.code == "not_authenticated") {
+                ref.refresh(userProvider);
+              }
               return Container();
             },
             loading: () => HAvatar(size: 40),

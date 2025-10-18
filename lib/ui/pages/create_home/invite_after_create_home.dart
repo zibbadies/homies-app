@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:go_router/go_router.dart';
 import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
@@ -42,11 +44,39 @@ class InviteAfterCreateHome extends StatelessWidget {
                   style: context.texts.displaySmall,
                 ),
 
-                SizedBox(height: 36),
-
-                Text(invite.code, style: context.texts.headlineLarge),
-
-                SizedBox(height: 36),
+                SizedBox(height: 24),
+                InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: invite.code));
+                    /*ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Copied to clipboard!',
+                          style: context.texts.bodyMedium!.copyWith(
+                            color: context.colors.surface,
+                          ),
+                        ),
+                      ),
+                    );*/
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          LucideIcons.copy,
+                          size: 24,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(invite.code, style: context.texts.headlineLarge),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24),
 
                 HButton(
                   text: "Share Link",
