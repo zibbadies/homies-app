@@ -68,4 +68,25 @@ class HomeApi {
       );
     }
   }
+  
+  Future<bool> leave() async {
+    try {
+      await dio.delete('/user/me/house');
+      return true;
+    } on DioException catch (e) {
+      if (e.response?.data != null && e.response?.data is! String) {
+        final errorData = e.response!.data;
+        throw ErrorWithCode.fromJson(errorData);
+      }
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'Network error occurred',
+      );
+    } catch (e) {
+      throw ErrorWithCode(
+        code: "internal_error",
+        message: 'An unexpected error occured',
+      );
+    }
+  }
 }

@@ -40,9 +40,7 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
-        actions: [
-          SettingsAvatarButton(),
-        ],
+        actions: [SettingsAvatarButton()],
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         backgroundColor: context.colors.surface,

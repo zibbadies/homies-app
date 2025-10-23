@@ -18,6 +18,12 @@ class HomeRepository {
     return success;
   }
 
+  Future<bool> leave() async {
+    final success = await api.leave();
+
+    return success;
+  }
+
   Future<InviteInfo> getInviteInfo(Invite invite) async {
     final inviteInfo = await api.getInviteInfo(invite);
 

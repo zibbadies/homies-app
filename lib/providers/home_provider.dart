@@ -21,3 +21,6 @@ final joinHomeProvider = FutureProvider.family<bool, Invite>(
   (ref, invite) => ref.read(homeRepositoryProvider).join(invite),
 );
 
+final leaveHomeProvider = FutureProvider<bool>(
+  (ref) => ref.read(homeRepositoryProvider).leave(),
+);
