@@ -58,10 +58,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
                 onTap: () {
                   if (context.mounted) context.push("/settings");
                 },
-                child: HAvatar(
-                  avatar: overview.user.avatar,
-                  size: 40,
-                ),
+                child: HAvatar(avatar: overview.user.avatar, size: 40),
               ),
             ),
           ],
@@ -79,56 +76,99 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(24.0),
             children: [
-              HAvatar(avatar: overview.user.avatar, size: 100),
-              SizedBox(height: 24),
-              HTitle(text: overview.home.name),
-              SizedBox(height: 24),
+              SizedBox(height: 48),
 
-              SizedBox(
-                width: double.infinity,
-                child: Text(
-                  "Members",
-                  style: context.texts.headlineMedium,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              SizedBox(height: 8),
-              SizedBox(
-                height: 50,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: overview.home.members.length,
-                  itemBuilder: (context, index) {
-                    final member = overview.home.members[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: HAvatar(avatar: member.avatar, size: 50),
-                    );
-                  },
-                ),
+              HTitle(
+                text: overview.home.name,
+                style: context.texts.headlineLarge,
               ),
 
-              SizedBox(height: 24),
+              SizedBox(height: 32),
+
+              WeekCalendar(),
+
+              SizedBox(height: 48),
+
+              Text("Today's Tasks", style: context.texts.headlineMedium),
             ],
           ),
         ),
       ),
-      error: (e, stack) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (e is ErrorWithCode) ...[
-            Text(
-              e.message,
+      error: (e, stack) => Scaffold(
+        backgroundColor: context.colors.surface,
+        body: RefreshIndicator(
+          onRefresh: () => ref.refresh(overviewProvider.future),
+          child: Center(
+            child: Text(
+              e is ErrorWithCode ? e.message : e.toString(),
               style: context.texts.titleSmall!.copyWith(
                 color: context.colors.error,
               ),
             ),
-            const SizedBox(height: 24),
-          ],
-        ],
+          ),
+        ),
       ),
       loading: () => Text("Loading"),
+    );
+  }
+}
+
+class WeekCalendar extends StatelessWidget {
+  const WeekCalendar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    final selectedIndex = DateTime.now().weekday - 1; // monday based
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 8.0;
+        final totalSpacing = (days.length - 1) * spacing;
+        final boxSize =
+            (constraints.maxWidth - totalSpacing - 16) / days.length;
+
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.colors.surfaceContainer,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: context.colors.onSurface.withValues(alpha: 0.25),
+                blurRadius: 2,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(days.length, (index) {
+              final isSelected = index == selectedIndex;
+              return Container(
+                width: boxSize,
+                height: boxSize,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? context.colors.primary
+                      : context.colors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  days[index],
+                  style: context.texts.labelMedium!.copyWith(
+                    color: isSelected
+                        ? context.colors.onPrimary
+                        : context.colors.onSecondary,
+                  ),
+                ),
+              );
+            }),
+          ),
+        );
+      },
     );
   }
 }
