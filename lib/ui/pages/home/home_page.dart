@@ -6,6 +6,7 @@ import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/user_provider.dart';
 import 'package:homies/ui/components/h_avatar.dart';
 import 'package:homies/ui/components/h_title.dart';
+import 'package:homies/ui/components/h_task_tile.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -90,6 +91,26 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
               SizedBox(height: 48),
 
               Text("Today's Tasks", style: context.texts.headlineMedium),
+
+              SizedBox(height: 12),
+
+              HTaskTile(
+                text: "Compra pane bene",
+                avatar: overview.user.avatar,
+                onToggle: (completed) {
+                  print("completed: $completed");
+                },
+              ),
+              
+              SizedBox(height: 12),
+
+              HTaskTile(
+                text: "Strangola Capo Zibbadies aaaa",
+                avatar: overview.user.avatar,
+                onToggle: (completed) {
+                  print("completed: $completed");
+                },
+              ),
             ],
           ),
         ),
