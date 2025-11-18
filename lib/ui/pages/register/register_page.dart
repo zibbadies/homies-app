@@ -110,7 +110,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
           authState.when(
             data: (auth) {
               if (auth.isAuthenticated) {
-                redirect(context, '/loading');
+                 redirect(context, '/loading');
               }
 
               return HButton(

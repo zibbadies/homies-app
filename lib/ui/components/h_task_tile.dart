@@ -29,6 +29,20 @@ class _HTaskTileState extends State<HTaskTile> {
     });
   }
 
+  void showInfo() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      backgroundColor: context.colors.surface,
+      barrierColor: context.colors.onSurface.withAlpha(120),
+      builder: (context) => InfoModal(text: widget.text),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,7 +62,7 @@ class _HTaskTileState extends State<HTaskTile> {
 
       child: GestureDetector(
         onTap: () {
-          toggleComplete();
+          showInfo();
           widget.onToggle(_completed);
         },
         child: ListTile(
@@ -57,18 +71,25 @@ class _HTaskTileState extends State<HTaskTile> {
           contentPadding: const EdgeInsets.only(right: 12, left: 16),
           minVerticalPadding: 0,
 
-          leading: Container(
-            width: 16,
-            height: 16,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: _completed ? context.colors.primary : Color(0xFFAAAAAA),
-                width: 2,
+          leading: GestureDetector(
+            onTap: () {
+              toggleComplete();
+            },
+            child: Container(
+              width: 16,
+              height: 16,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: _completed
+                      ? context.colors.primary
+                      : Color(0xFFAAAAAA),
+                  width: 2,
+                ),
+                color: _completed ? context.colors.primary : Colors.transparent,
               ),
-              color: _completed ? context.colors.primary : Colors.transparent,
+              child: null,
             ),
-            child: null,
           ),
           title: Text(
             widget.text,
@@ -85,9 +106,40 @@ class _HTaskTileState extends State<HTaskTile> {
                   : context.colors.onSurface,
             ),
           ),
-          trailing: GestureDetector(
-            onTap: () {},
-            child: HAvatar(avatar: widget.avatar, size: 36),
+          trailing: HAvatar(avatar: widget.avatar, size: 36),
+        ),
+      ),
+    );
+  }
+}
+
+class InfoModal extends StatelessWidget {
+  const InfoModal({super.key, required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+
+            children: [
+              Text(
+                "Task's Details",
+                style: context.texts.headlineMedium,
+                textAlign: TextAlign.left,
+              ),
+
+              SizedBox(height: 12),
+
+              Text(text, style: context.texts.bodyLarge),
+            ],
           ),
         ),
       ),

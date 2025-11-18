@@ -7,6 +7,7 @@ import 'package:homies/providers/user_provider.dart';
 import 'package:homies/ui/components/h_avatar.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_task_tile.dart';
+import 'package:homies/ui/components/h_week_calendar.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -86,7 +87,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
 
               SizedBox(height: 32),
 
-              WeekCalendar(),
+              HWeekCalendar(),
 
               SizedBox(height: 48),
 
@@ -97,19 +98,15 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
               HTaskTile(
                 text: "Compra pane bene",
                 avatar: overview.user.avatar,
-                onToggle: (completed) {
-                  print("completed: $completed");
-                },
+                onToggle: (completed) {},
               ),
-              
+
               SizedBox(height: 12),
 
               HTaskTile(
                 text: "Strangola Capo Zibbadies aaaa",
                 avatar: overview.user.avatar,
-                onToggle: (completed) {
-                  print("completed: $completed");
-                },
+                onToggle: (completed) {},
               ),
             ],
           ),
@@ -134,62 +131,3 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
   }
 }
 
-class WeekCalendar extends StatelessWidget {
-  const WeekCalendar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    final selectedIndex = DateTime.now().weekday - 1; // monday based
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        const spacing = 8.0;
-        final totalSpacing = (days.length - 1) * spacing;
-        final boxSize =
-            (constraints.maxWidth - totalSpacing - 16) / days.length;
-
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: context.colors.surfaceContainer,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: context.colors.onSurface.withValues(alpha: 0.25),
-                blurRadius: 2,
-                offset: const Offset(0, 1),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(days.length, (index) {
-              final isSelected = index == selectedIndex;
-              return Container(
-                width: boxSize,
-                height: boxSize,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? context.colors.primary
-                      : context.colors.surface,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  days[index],
-                  style: context.texts.labelMedium!.copyWith(
-                    color: isSelected
-                        ? context.colors.onPrimary
-                        : context.colors.onSecondary,
-                  ),
-                ),
-              );
-            }),
-          ),
-        );
-      },
-    );
-  }
-}

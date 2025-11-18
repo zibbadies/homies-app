@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/overview.dart';
 import 'package:homies/extensions/theme_extension.dart';
+import 'package:homies/providers/auth_provider.dart';
 import 'package:homies/providers/user_provider.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/utils/redirect.dart';
@@ -18,7 +19,10 @@ class LoadingPage extends ConsumerWidget {
         data: (_) => redirect(context, "/"),
         error: (e, _) {
           if (e is ErrorWithCode) {
-            if (e.code == "user_not_in_house") {
+            if (e.code == "not_authenticated") {
+              ref.read(authProvider.notifier).reset();
+              redirect(context, "/register");
+            } else if (e.code == "user_not_in_house") {
               redirect(context, "/create_home");
             } else {
               redirect(context, "/welcome");
