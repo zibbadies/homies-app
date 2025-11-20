@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:homies/extensions/theme_extension.dart';
 import "package:homies/data/models/avatar.dart";
 import "package:homies/ui/components/h_avatar.dart";
+import "package:homies/ui/components/h_button.dart";
 
 class HTaskTile extends StatefulWidget {
   final String text;
@@ -19,7 +20,6 @@ class HTaskTile extends StatefulWidget {
   State<HTaskTile> createState() => _HTaskTileState();
 }
 
-//TODO: fare che quando premi sulle task ti apre la tendina con la task completax e altre info
 class _HTaskTileState extends State<HTaskTile> {
   bool _completed = false;
 
@@ -39,7 +39,30 @@ class _HTaskTileState extends State<HTaskTile> {
       ),
       backgroundColor: context.colors.surface,
       barrierColor: context.colors.onSurface.withAlpha(120),
-      builder: (context) => InfoModal(text: widget.text),
+      builder: (context) {
+        // Local state for the modal (mirrors the parent)
+        bool localCompleted = _completed;
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return InfoModal(
+              text: widget.text,
+              completed: localCompleted,
+
+              onToggle: () {
+                // Update the modal UI
+                setModalState(() => localCompleted = !localCompleted);
+
+                // Update parent widget
+                toggleComplete();
+
+                // If you want to close after toggle:
+                // Navigator.pop(context);
+              },
+            );
+          },
+        );
+      },
     );
   }
 
@@ -60,24 +83,29 @@ class _HTaskTileState extends State<HTaskTile> {
         ],
       ),
 
-      child: GestureDetector(
+      child: ListTile(
         onTap: () {
           showInfo();
           widget.onToggle(_completed);
         },
-        child: ListTile(
-          horizontalTitleGap: 8,
+        horizontalTitleGap: 8,
 
-          contentPadding: const EdgeInsets.only(right: 12, left: 16),
-          minVerticalPadding: 0,
+        contentPadding: const EdgeInsets.only(right: 12),
+        minVerticalPadding: 0,
 
-          leading: GestureDetector(
-            onTap: () {
-              toggleComplete();
-            },
+        leading: GestureDetector(
+          onTap: () {
+            toggleComplete();
+          },
+          child: Container(
+            padding: const EdgeInsets.only(left: 12),
+            // This ensures the tap area is as tall as the ListTile
+            height: double.infinity,
+            width: 40, // Width of the tap target (adjust as needed)
+            alignment: Alignment.center,
             child: Container(
-              width: 16,
-              height: 16,
+              width: 18,
+              height: 18,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
@@ -91,32 +119,39 @@ class _HTaskTileState extends State<HTaskTile> {
               child: null,
             ),
           ),
-          title: Text(
-            widget.text,
-
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: context.texts.bodyLarge!.copyWith(
-              decoration: _completed
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none,
-              decorationColor: context.colors.onSurface.withValues(alpha: 0.5),
-              color: _completed
-                  ? context.colors.onSurface.withValues(alpha: 0.5)
-                  : context.colors.onSurface,
-            ),
-          ),
-          trailing: HAvatar(avatar: widget.avatar, size: 36),
         ),
+        title: Text(
+          widget.text,
+
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.texts.bodyLarge!.copyWith(
+            decoration: _completed
+                ? TextDecoration.lineThrough
+                : TextDecoration.none,
+            decorationColor: context.colors.onSurface.withValues(alpha: 0.5),
+            color: _completed
+                ? context.colors.onSurface.withValues(alpha: 0.5)
+                : context.colors.onSurface,
+          ),
+        ),
+        trailing: HAvatar(avatar: widget.avatar, size: 36),
       ),
     );
   }
 }
 
 class InfoModal extends StatelessWidget {
-  const InfoModal({super.key, required this.text});
+  const InfoModal({
+    super.key,
+    required this.text,
+    required this.completed,
+    required this.onToggle,
+  });
 
   final String text;
+  final bool completed;
+  final VoidCallback onToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +174,19 @@ class InfoModal extends StatelessWidget {
               SizedBox(height: 12),
 
               Text(text, style: context.texts.bodyLarge),
+
+              SizedBox(height: 48),
+
+              HButton(
+                text: completed ? "Mark as Incomplete" : "Complete Task",
+                onPressed: onToggle,
+                color: completed
+                    ? context.colors.secondary
+                    : context.colors.primary,
+                textColor: completed
+                    ? context.colors.onSecondary
+                    : context.colors.onPrimary,
+              ),
             ],
           ),
         ),
