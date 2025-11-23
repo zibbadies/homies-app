@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter_lucide/flutter_lucide.dart";
 import 'package:homies/extensions/theme_extension.dart';
 import "package:homies/data/models/avatar.dart";
 import "package:homies/ui/components/h_avatar.dart";
@@ -53,11 +54,30 @@ class _HTaskTileState extends State<HTaskTile> {
                 // Update the modal UI
                 setModalState(() => localCompleted = !localCompleted);
 
-                // Update parent widget
                 toggleComplete();
+              },
+              onDelete: () {
+                Navigator.pop(context);
 
-                // If you want to close after toggle:
-                // Navigator.pop(context);
+                Future.delayed(const Duration(milliseconds: 50), () {
+                  showModalBottomSheet(
+                    context: this.context,
+                    isScrollControlled: true,
+                    showDragHandle: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(24),
+                      ),
+                    ),
+                    backgroundColor: context.colors.surface,
+                    builder: (_) => DeleteConfirmModal(
+                      onCancel: () {
+                        Navigator.pop(this.context);
+                        showInfo();
+                      },
+                    ),
+                  );
+                });
               },
             );
           },
@@ -147,11 +167,13 @@ class InfoModal extends StatelessWidget {
     required this.text,
     required this.completed,
     required this.onToggle,
+    required this.onDelete,
   });
 
   final String text;
   final bool completed;
   final VoidCallback onToggle;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -177,17 +199,96 @@ class InfoModal extends StatelessWidget {
 
               SizedBox(height: 48),
 
-              HButton(
-                text: completed ? "Mark as Incomplete" : "Complete Task",
-                onPressed: onToggle,
-                color: completed
-                    ? context.colors.secondary
-                    : context.colors.primary,
-                textColor: completed
-                    ? context.colors.onSecondary
-                    : context.colors.onPrimary,
+              Row(
+                children: [
+                  HButton(
+                    icon: LucideIcons.trash,
+                    onPressed: onDelete,
+                    width: 48,
+                    color: context.colors.secondary,
+                    textColor: context.colors.onSecondary,
+                  ),
+
+                  SizedBox(width: 12),
+
+                  HButton(
+                    icon: LucideIcons.square_pen,
+                    width: 48,
+                    color: context.colors.secondary,
+                    textColor: context.colors.onSecondary,
+                  ),
+
+                  SizedBox(width: 12),
+
+                  Expanded(
+                    child: HButton(
+                      text: completed ? "Mark as Incomplete" : "Complete Task",
+                      onPressed: onToggle,
+                      color: completed
+                          ? context.colors.secondary
+                          : context.colors.primary,
+                      textColor: completed
+                          ? context.colors.onSecondary
+                          : context.colors.onPrimary,
+                    ),
+                  ),
+                ],
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DeleteConfirmModal extends StatelessWidget {
+  const DeleteConfirmModal({super.key, required this.onCancel});
+
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: PopScope(
+        canPop: true,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+
+              children: [
+                Text(
+                  "BUT AR IU SHOR???",
+                  style: context.texts.displaySmall,
+                  textAlign: TextAlign.left,
+                ),
+
+                SizedBox(height: 24),
+
+                Column(
+                  children: [
+                    HButton(
+                      text: "Delete Task",
+                      color: context.colors.error,
+                      textColor: context.colors.onError,
+                      onPressed: () {},
+                    ),
+                    SizedBox(height: 12),
+
+                    HButton(
+                      text: "Cancel",
+                      color: context.colors.secondary,
+                      textColor: context.colors.onSecondary,
+                      onPressed: onCancel,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

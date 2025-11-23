@@ -5,8 +5,10 @@ class HButton extends StatelessWidget {
   const HButton({
     super.key,
     this.text = "",
+    this.icon,
     required this.color,
     this.textColor,
+    this.width = double.infinity,
     this.loading = false,
     this.loadingColor,
     this.onPressed,
@@ -14,7 +16,9 @@ class HButton extends StatelessWidget {
 
   final String text;
   final Color color;
+  final IconData? icon;
   final Color? textColor;
+  final double width;
   final bool loading;
   final Color? loadingColor;
   final VoidCallback? onPressed;
@@ -34,7 +38,7 @@ class HButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: SizedBox(
-        width: double.infinity,
+        width: width,
         child: TextButton(
           onPressed: () {
             // unfocus all before the callback
@@ -59,11 +63,25 @@ class HButton extends StatelessWidget {
                     strokeWidth: 3,
                   ),
                 )
-              : Text(
-                  text,
-                  style: context.texts.labelLarge!.copyWith(
-                    color: textColor ?? context.colors.onSurface,
-                  ),
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null) ...[
+                      Icon(
+                        icon,
+                        size: 24,
+                        color: textColor ?? context.colors.onSurface,
+                      ),
+                      if (text.isNotEmpty) ...[const SizedBox(width: 8)],
+                    ],
+                    Text(
+                      text,
+                      style: context.texts.labelLarge!.copyWith(
+                        color: textColor ?? context.colors.onSurface,
+                      ),
+                    ),
+                  ],
                 ),
         ),
       ),
