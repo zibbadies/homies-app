@@ -119,9 +119,8 @@ class _HTaskTileState extends State<HTaskTile> {
           },
           child: Container(
             padding: const EdgeInsets.only(left: 12),
-            // This ensures the tap area is as tall as the ListTile
             height: double.infinity,
-            width: 40, // Width of the tap target (adjust as needed)
+            width: 40,
             alignment: Alignment.center,
             child: Container(
               width: 18,
@@ -161,7 +160,7 @@ class _HTaskTileState extends State<HTaskTile> {
   }
 }
 
-class InfoModal extends StatelessWidget {
+class InfoModal extends StatefulWidget {
   const InfoModal({
     super.key,
     required this.text,
@@ -176,65 +175,127 @@ class InfoModal extends StatelessWidget {
   final VoidCallback onDelete;
 
   @override
+  State<InfoModal> createState() => _InfoModalState();
+}
+
+class _InfoModalState extends State<InfoModal> {
+  bool _editing = false;
+  final controller = TextEditingController();
+
+  void toggleEdit() {
+    setState(() {
+      _editing = !_editing;
+    });
+    if (_editing) controller.text = widget.text;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
-            children: [
-              Text(
-                "Task's Details",
-                style: context.texts.headlineMedium,
-                textAlign: TextAlign.left,
-              ),
+              children: [
+                Text(
+                  _editing ? "Editing Task" : "Task's Details",
+                  style: context.texts.headlineMedium,
+                  textAlign: TextAlign.left,
+                ),
 
-              SizedBox(height: 12),
+                SizedBox(height: 12),
 
-              Text(text, style: context.texts.bodyLarge),
+                _editing
+                    ? TextField(
+                        autofocus: true,
+                        controller: controller,
+                        style: context.texts.bodyLarge,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          hintText: "Write something...",
+                          border: InputBorder.none, // removes the underline
+                          enabledBorder:
+                              InputBorder.none, // also remove when not focused
+                          focusedBorder:
+                              InputBorder.none, // also remove when focused
+                        ),
+                      )
+                    : Text(widget.text, style: context.texts.bodyLarge),
 
-              SizedBox(height: 48),
+                SizedBox(height: 48),
 
-              Row(
-                children: [
-                  HButton(
-                    icon: LucideIcons.trash,
-                    onPressed: onDelete,
-                    width: 48,
-                    color: context.colors.secondary,
-                    textColor: context.colors.onSecondary,
-                  ),
+                Row(
+                  children: [
+                    if (_editing) ...[
+                      Expanded(
+                        child: HButton(
+                          text: "Cancel",
+                          onPressed: toggleEdit,
+                          color: context.colors.secondary,
+                          textColor: context.colors.onSecondary,
+                        ),
+                      ),
 
-                  SizedBox(width: 12),
+                      SizedBox(width: 12),
 
-                  HButton(
-                    icon: LucideIcons.square_pen,
-                    width: 48,
-                    color: context.colors.secondary,
-                    textColor: context.colors.onSecondary,
-                  ),
+                      Expanded(
+                        child: HButton(
+                          text: "Done",
+                          onPressed: toggleEdit,
+                          color: context.colors.primary,
+                          textColor: context.colors.onPrimary,
+                        ),
+                      ),
+                    ],
+                    if (!_editing) ...[
+                      HButton(
+                        icon: LucideIcons.trash,
+                        onPressed: widget.onDelete,
+                        width: 48,
+                        color: context.colors.secondary,
+                        textColor: context.colors.onSecondary,
+                      ),
 
-                  SizedBox(width: 12),
+                      SizedBox(width: 12),
 
-                  Expanded(
-                    child: HButton(
-                      text: completed ? "Mark as Incomplete" : "Complete Task",
-                      onPressed: onToggle,
-                      color: completed
-                          ? context.colors.secondary
-                          : context.colors.primary,
-                      textColor: completed
-                          ? context.colors.onSecondary
-                          : context.colors.onPrimary,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                      HButton(
+                        icon: LucideIcons.square_pen,
+                        onPressed: toggleEdit,
+                        width: 48,
+                        color: context.colors.secondary,
+                        textColor: context.colors.onSecondary,
+                      ),
+
+                      SizedBox(width: 12),
+
+                      Expanded(
+                        child: HButton(
+                          text: widget.completed
+                              ? "Mark as Incomplete"
+                              : "Complete Task",
+                          onPressed: widget.onToggle,
+                          color: widget.completed
+                              ? context.colors.secondary
+                              : context.colors.primary,
+                          textColor: widget.completed
+                              ? context.colors.onSecondary
+                              : context.colors.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
