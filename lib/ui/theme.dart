@@ -25,7 +25,8 @@ final theme = ThemeData(
     displaySmall: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
 
     headlineLarge: TextStyle(fontSize: 42, fontWeight: FontWeight.bold, height: 1.0),
-    headlineMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+    headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
 
     titleLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
     titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

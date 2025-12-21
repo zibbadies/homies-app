@@ -47,13 +47,16 @@ class RouterService {
     GoRoute(
       path: '/create_home',
       builder: (context, state) => const AuthGuard(child: CreateHomePage()),
+      routes: [
+        GoRoute(
+          path: 'invite',
+          builder: (context, state) => AuthGuard(
+            child: InviteAfterCreateHome(invite: state.extra as Invite),
+          ),
+        ),
+      ],
     ),
-    GoRoute(
-      path: '/invite_after_create',
-      builder: (context, state) => AuthGuard(
-        child: InviteAfterCreateHome(invite: state.extra as Invite),
-      ),
-    ),
+
     GoRoute(
       path: '/join_home',
       builder: (context, state) {
@@ -62,11 +65,13 @@ class RouterService {
         }
         return AuthGuard(child: JoinHomePage());
       },
-    ),
-    GoRoute(
-      path: '/join_confirm',
-      builder: (context, state) =>
-          AuthGuard(child: JoinConfirm(invite: state.extra as Invite)),
+      routes: [
+        GoRoute(
+          path: 'confirm',
+          builder: (context, state) =>
+              AuthGuard(child: JoinConfirm(invite: state.extra as Invite)),
+        ),
+      ],
     ),
   ];
 }

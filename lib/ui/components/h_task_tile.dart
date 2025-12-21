@@ -207,7 +207,7 @@ class _InfoModalState extends State<InfoModal> {
               children: [
                 Text(
                   _editing ? "Editing Task" : "Task's Details",
-                  style: context.texts.headlineMedium,
+                  style: context.texts.headlineSmall,
                   textAlign: TextAlign.left,
                 ),
 
@@ -249,7 +249,7 @@ class _InfoModalState extends State<InfoModal> {
 
                       Expanded(
                         child: HButton(
-                          text: "Done",
+                          text: "Edit",
                           onPressed: toggleEdit,
                           color: context.colors.primary,
                           textColor: context.colors.onPrimary,
@@ -323,28 +323,41 @@ class DeleteConfirmModal extends StatelessWidget {
 
               children: [
                 Text(
-                  "BUT AR IU SHOR???",
-                  style: context.texts.displaySmall,
+                  "Deleting Task",
+                  style: context.texts.headlineSmall,
+                  textAlign: TextAlign.left,
+                ),
+
+                SizedBox(height: 12),
+
+                Text(
+                  "This could be permanent, or it could be not. Who knows.",
+                  style: context.texts.bodyLarge,
                   textAlign: TextAlign.left,
                 ),
 
                 SizedBox(height: 24),
 
-                Column(
+                Row(
                   children: [
-                    HButton(
-                      text: "Delete Task",
-                      color: context.colors.error,
-                      textColor: context.colors.onError,
-                      onPressed: () {},
+                    Expanded(
+                      child: HButton(
+                        text: "Delete",
+                        color: context.colors.error,
+                        textColor: context.colors.onError,
+                        onPressed: () {},
+                      ),
                     ),
-                    SizedBox(height: 12),
 
-                    HButton(
-                      text: "Cancel",
-                      color: context.colors.secondary,
-                      textColor: context.colors.onSecondary,
-                      onPressed: onCancel,
+                    SizedBox(width: 12),
+
+                    Expanded(
+                      child: HButton(
+                        text: "Cancel",
+                        color: context.colors.secondary,
+                        textColor: context.colors.onSecondary,
+                        onPressed: onCancel,
+                      ),
                     ),
                   ],
                 ),

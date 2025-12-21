@@ -122,7 +122,16 @@ class _LeaveConfirmationModalState
               children: [
                 Text(
                   "Are you sure you\nwant to leave ${ref.read(overviewProvider).valueOrNull?.home.name}?",
-                  style: context.texts.displaySmall,
+                  style: context.texts.headlineSmall!.copyWith(
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+
+                SizedBox(height: 12),
+
+                Text(
+                  "This action is irreversible",
+                  style: context.texts.bodyLarge,
                   textAlign: TextAlign.left,
                 ),
 

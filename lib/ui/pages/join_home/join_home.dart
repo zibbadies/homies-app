@@ -126,7 +126,7 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
                     data: (inviteInfo) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         // here i use .go to force the dispose of this widget
-                        context.go('/join_confirm', extra: _invite);
+                        context.go('/join_home/confirm', extra: _invite);
                       });
 
                       return HButton(
