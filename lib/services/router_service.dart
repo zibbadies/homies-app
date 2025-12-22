@@ -12,6 +12,7 @@ import 'package:homies/ui/pages/loading_page.dart';
 import 'package:homies/ui/pages/login/login_page.dart';
 import 'package:homies/ui/pages/register/register_page.dart';
 import 'package:homies/ui/pages/settings_page.dart';
+import 'package:homies/ui/pages/todo/todo_page.dart';
 import 'package:homies/ui/pages/welcome_page.dart';
 
 class RouterService {
@@ -26,32 +27,59 @@ class RouterService {
       );
 
   static final _routes = [
-    GoRoute(path: '/loading', builder: (context, state) => const LoadingPage()),
-    GoRoute(path: '/welcome', builder: (context, state) => const WelcomePage()),
+    GoRoute(
+      path: '/loading',
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: LoadingPage()),
+    ),
+
+    GoRoute(
+      path: '/welcome',
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: WelcomePage()),
+    ),
 
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomeGuard(child: HomePage()),
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: HomeGuard(child: HomePage())),
+    ),
+
+    GoRoute(
+      path: '/todo',
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: HomeGuard(child: TodoPage())),
     ),
 
     GoRoute(
       path: '/register',
-      builder: (context, state) => const RegisterPage(),
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: RegisterPage()),
     ),
-    GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+
+    GoRoute(
+      path: '/login',
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: LoginPage()),
+    ),
 
     GoRoute(
       path: '/settings',
-      builder: (context, state) => const AuthGuard(child: SettingsPage()),
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: AuthGuard(child: SettingsPage())),
     ),
+
     GoRoute(
       path: '/create_home',
-      builder: (context, state) => const AuthGuard(child: CreateHomePage()),
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: AuthGuard(child: CreateHomePage())),
       routes: [
         GoRoute(
           path: 'invite',
-          builder: (context, state) => AuthGuard(
-            child: InviteAfterCreateHome(invite: state.extra as Invite),
+          pageBuilder: (context, state) => NoTransitionPage(
+            child: AuthGuard(
+              child: InviteAfterCreateHome(invite: state.extra as Invite),
+            ),
           ),
         ),
       ],
@@ -59,17 +87,17 @@ class RouterService {
 
     GoRoute(
       path: '/join_home',
-      builder: (context, state) {
-        if (state.extra is Invite) {
-          return AuthGuard(child: JoinHomePage(invite: state.extra as Invite));
-        }
-        return AuthGuard(child: JoinHomePage());
-      },
+      pageBuilder: (context, state) => NoTransitionPage(
+        child: state.extra is Invite
+            ? AuthGuard(child: JoinHomePage(invite: state.extra as Invite))
+            : const AuthGuard(child: JoinHomePage()),
+      ),
       routes: [
         GoRoute(
           path: 'confirm',
-          builder: (context, state) =>
-              AuthGuard(child: JoinConfirm(invite: state.extra as Invite)),
+          pageBuilder: (context, state) => NoTransitionPage(
+            child: AuthGuard(child: JoinConfirm(invite: state.extra as Invite)),
+          ),
         ),
       ],
     ),

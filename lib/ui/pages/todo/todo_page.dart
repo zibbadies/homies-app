@@ -10,14 +10,14 @@ import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_task_tile.dart';
 import 'package:homies/ui/components/h_week_calendar.dart';
 
-class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+class TodoPage extends ConsumerStatefulWidget {
+  const TodoPage({super.key});
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState();
+  ConsumerState<TodoPage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> with RouteAware {
+class _HomePageState extends ConsumerState<TodoPage> with RouteAware {
   @override
   void initState() {
     super.initState();
@@ -73,8 +73,8 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
           ), // Shadow color
         ),
         backgroundColor: context.colors.surface,
-        
-        bottomNavigationBar: HNavBar(currentIndex: 0),
+
+        bottomNavigationBar: HNavBar(currentIndex: 1),
 
         body: RefreshIndicator(
           onRefresh: () => ref.refresh(overviewProvider.future),
@@ -82,22 +82,12 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(24.0),
             children: [
-              SizedBox(height: 48),
-
               HTitle(
-                text: overview.home.name,
+                text: "Todos",
                 style: context.texts.headlineLarge,
               ),
 
-              SizedBox(height: 32),
-
-              HWeekCalendar(),
-
-              SizedBox(height: 48),
-
-              Text("Today's Tasks", style: context.texts.headlineMedium),
-
-              SizedBox(height: 12),
+              SizedBox(height: 24),
 
               HTaskTile(
                 text: "Compra pane bene",
