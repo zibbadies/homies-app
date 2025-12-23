@@ -78,7 +78,7 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
 
                         Center(
                           child: SizedBox(
-                            height: 92,
+                            height: 100,
                             child: ListView.builder(
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,

@@ -108,7 +108,7 @@ class _CreateHomeFormState extends ConsumerState<CreateHomeForm> {
                   data: (invite) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (invite.code.isNotEmpty) {
-                        context.go('/create_home/invite', extra: invite);
+                        context.go('/invite_after_create', extra: invite);
                       }
                     });
 

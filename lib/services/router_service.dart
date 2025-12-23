@@ -66,23 +66,22 @@ class RouterService {
     GoRoute(
       path: '/settings',
       pageBuilder: (context, state) =>
-          const NoTransitionPage(child: AuthGuard(child: SettingsPage())),
+          slideTransitionPage(AuthGuard(child: SettingsPage())),
     ),
 
     GoRoute(
       path: '/create_home',
       pageBuilder: (context, state) =>
           const NoTransitionPage(child: AuthGuard(child: CreateHomePage())),
-      routes: [
-        GoRoute(
-          path: 'invite',
-          pageBuilder: (context, state) => NoTransitionPage(
-            child: AuthGuard(
-              child: InviteAfterCreateHome(invite: state.extra as Invite),
-            ),
-          ),
+    ),
+
+    GoRoute(
+      path: '/invite_after_create',
+      pageBuilder: (context, state) => NoTransitionPage(
+        child: AuthGuard(
+          child: InviteAfterCreateHome(invite: state.extra as Invite),
         ),
-      ],
+      ),
     ),
 
     GoRoute(
@@ -92,14 +91,35 @@ class RouterService {
             ? AuthGuard(child: JoinHomePage(invite: state.extra as Invite))
             : const AuthGuard(child: JoinHomePage()),
       ),
-      routes: [
-        GoRoute(
-          path: 'confirm',
-          pageBuilder: (context, state) => NoTransitionPage(
-            child: AuthGuard(child: JoinConfirm(invite: state.extra as Invite)),
-          ),
-        ),
-      ],
+    ),
+
+    GoRoute(
+      path: '/join_confirm',
+      pageBuilder: (context, state) => slideTransitionPage(
+        AuthGuard(child: JoinConfirm(invite: state.extra as Invite)),
+      ),
     ),
   ];
+
+  static CustomTransitionPage<dynamic> slideTransitionPage(Widget child) {
+    return CustomTransitionPage(
+      child: child,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final tween = Tween<Offset>(
+          begin: const Offset(1.0, 0.0),
+          end: Offset.zero,
+        );
+
+        final slideAnimation = tween.animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+            reverseCurve: Curves.easeInCubic,
+          ),
+        );
+
+        return SlideTransition(position: slideAnimation, child: child);
+      },
+    );
+  }
 }
