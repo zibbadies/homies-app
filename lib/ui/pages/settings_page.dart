@@ -6,6 +6,7 @@ import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/auth_provider.dart';
 import 'package:homies/providers/home_provider.dart';
 import 'package:homies/providers/user_provider.dart';
+import 'package:homies/ui/components/h_avatar.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 
@@ -29,6 +30,7 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final overviewAsync = ref.watch(overviewProvider);
+    final userAsync = ref.watch(userProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -47,7 +49,13 @@ class SettingsPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HTitle(text: "Settings"),
+              userAsync.when(
+                data: (user) => HAvatar(avatar: user.avatar, size: 80),
+                loading: () => const SizedBox.shrink(), // or a spinner
+                error: (err, stack) => const SizedBox.shrink(),
+              ),
+
+              HAvatar(avatar: ref.read(userProvider).value!.avatar, size: 80),
 
               SizedBox(height: 32),
 
@@ -64,6 +72,7 @@ class SettingsPage extends ConsumerWidget {
                 data: (data) => Column(
                   children: [
                     SizedBox(height: 12),
+
                     HButton(
                       text: "Leave Home",
                       color: context.colors.error,
@@ -122,8 +131,7 @@ class _LeaveConfirmationModalState
               children: [
                 Text(
                   "Are you sure you\nwant to leave ${ref.read(overviewProvider).valueOrNull?.home.name}?",
-                  style: context.texts.headlineSmall!.copyWith(
-                  ),
+                  style: context.texts.headlineSmall!.copyWith(),
                   textAlign: TextAlign.left,
                 ),
 
