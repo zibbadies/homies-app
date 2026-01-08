@@ -34,7 +34,11 @@ class SettingsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        title: HTitle(
+          text: "Profile and Settings",
+          style: context.texts.titleLarge,
+        ),
+        titleSpacing: 0,
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         backgroundColor: context.colors.surface,
@@ -47,17 +51,25 @@ class SettingsPage extends ConsumerWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               userAsync.when(
-                data: (user) => HAvatar(avatar: user.avatar, size: 80),
+                data: (user) => Column(
+                  children: [
+                    SizedBox(height: 48),
+
+                    HAvatar(avatar: user.avatar, size: 120),
+
+                    SizedBox(height: 12),
+
+                    Text(user.name, style: context.texts.titleLarge),
+
+                    SizedBox(height: 80),
+                  ],
+                ),
                 loading: () => const SizedBox.shrink(), // or a spinner
                 error: (err, stack) => const SizedBox.shrink(),
               ),
-
-              HAvatar(avatar: ref.read(userProvider).value!.avatar, size: 80),
-
-              SizedBox(height: 32),
 
               HButton(
                 text: "Logout",
