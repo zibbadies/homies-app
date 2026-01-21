@@ -68,7 +68,7 @@ class HomeApi {
       );
     }
   }
-  
+
   Future<bool> leave() async {
     try {
       await dio.delete('/user/me/house');
