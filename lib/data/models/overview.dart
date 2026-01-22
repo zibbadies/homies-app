@@ -1,3 +1,4 @@
+/* deprecated
 import 'package:homies/data/models/lists.dart';
 import 'package:homies/data/models/user.dart';
 import 'package:homies/data/models/home.dart';
@@ -5,7 +6,7 @@ import 'package:homies/data/models/home.dart';
 class Overview {
   final User user;
   final Home home;
-  final List items; // TODO
+  final ListsOverview lists; // TODO
 
   const Overview({required this.user, required this.home, required this.items});
 
@@ -17,3 +18,4 @@ class Overview {
     );
   }
 }
+*/

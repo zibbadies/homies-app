@@ -1,4 +1,4 @@
-import 'package:homies/data/models/overview.dart';
+import 'package:homies/data/models/home.dart';
 import 'package:homies/data/models/user.dart';
 import 'package:homies/data/sources/user_api.dart';
 
@@ -12,10 +12,18 @@ class UserRepository {
 
     return user;
   }
+  
+  Future<Home> getHome() async {
+    final home = await api.getHome();
 
+    return home;
+  }
+
+/*  deprecated
   Future<Overview> getOverview() async {
     final overview = await api.getOverview();
 
     return overview;
   }
+*/
 }

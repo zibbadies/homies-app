@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:homies/data/models/auth_state.dart';
+import 'package:homies/data/models/auth.dart';
 import 'package:homies/data/repos/auth_repo.dart';
 import 'package:homies/data/sources/auth_api.dart';
 import 'package:homies/providers/dio_provider.dart';

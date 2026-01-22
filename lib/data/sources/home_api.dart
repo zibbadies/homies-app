@@ -6,7 +6,7 @@ class HomeApi {
   final Dio dio;
   HomeApi(this.dio);
 
-  Future<Invite> create(String name) async {
+  Future <Invite> create(String name) async {
     try {
       final res = await dio.post('/house/create', data: {'name': name});
       return Invite.fromJson(res.data);

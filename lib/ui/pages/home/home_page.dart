@@ -22,7 +22,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.refresh(overviewProvider);
+      ref.refresh(userProvider);
     });
   }
 
@@ -43,12 +43,12 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
 
   @override
   void didPopNext() {
-    ref.refresh(overviewProvider);
+    ref.refresh(userProvider);
   }
 
   @override
   Widget build(BuildContext context) {
-    final overviewAsync = ref.watch(overviewProvider);
+    final overviewAsync = ref.watch(overviewProvider);// TODO CHANGE DAI FORZA
 
     return overviewAsync.when(
       data: (overview) => Scaffold(

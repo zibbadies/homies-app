@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:homies/data/models/auth.dart';
 
 class SecureStorageService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -7,8 +8,8 @@ class SecureStorageService {
     await _storage.write(key: 'auth_token', value: token);
   }
 
-  Future<String?> getToken() async {
-    return _storage.read(key: 'auth_token');
+  Future<Token> getToken() async {
+    return Token(value: _storage.read(key: 'auth_token'));
   }
 
   Future<void> deleteToken() async {

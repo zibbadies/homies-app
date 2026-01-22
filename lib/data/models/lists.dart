@@ -7,7 +7,7 @@ class ListsResponse {
 
   factory ListsResponse.fromJson(Map<String, dynamic> json) {
     return ListsResponse(
-      lists: (json['items'] as List).map((e) => ListId.fromJson(e)).toList(),
+      lists: (json['lists'] as List).map((e) => ListId.fromJson(e)).toList(),
     );
   }
 }

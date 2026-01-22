@@ -1,4 +1,4 @@
-import 'package:homies/data/models/token.dart';
+import 'package:homies/data/models/auth.dart';
 import 'package:homies/data/sources/auth_api.dart';
 import 'package:homies/services/storage_service.dart';
 
@@ -10,14 +10,14 @@ class AuthRepository {
 
   Future<Token> register(String name, String password) async {
     final token = await api.register(name, password);
-    await storage.saveToken(token.token);
+    await storage.saveToken(token.value);
 
     return token;
   }
 
   Future<Token> login(String name, String password) async {
     final token = await api.login(name, password);
-    await storage.saveToken(token.token);
+    await storage.saveToken(token.value);
 
     return token;
   }
@@ -26,7 +26,7 @@ class AuthRepository {
     await storage.deleteToken();
   }
 
-  Future<String?> getToken() async {
+  Future<Token> getToken() async {
     return storage.getToken();
   }
 }

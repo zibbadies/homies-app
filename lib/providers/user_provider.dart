@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:homies/data/models/overview.dart';
+import 'package:homies/data/models/home.dart';
 import 'package:homies/data/models/user.dart';
 import 'package:homies/data/repos/user_repo.dart';
 import 'package:homies/data/sources/user_api.dart';
@@ -14,6 +14,12 @@ final userProvider = FutureProvider<User>(
   (ref) => ref.read(userRepositoryProvider).getUser(),
 );
 
+final homeProvider = FutureProvider<Home>(
+  (ref) => ref.read(userRepositoryProvider).getHome(),
+);
+
+/* deprecated 
 final overviewProvider = FutureProvider<Overview>(
   (ref) => ref.read(userRepositoryProvider).getOverview(),
 );
+*/

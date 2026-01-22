@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:homies/data/models/error.dart';
-import 'package:homies/data/models/token.dart';
+import 'package:homies/data/models/auth.dart';
 
 class AuthApi {
   final Dio dio;
