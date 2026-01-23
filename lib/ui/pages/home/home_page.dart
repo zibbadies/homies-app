@@ -9,6 +9,7 @@ import 'package:homies/ui/components/h_navbar.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_task_tile.dart';
 import 'package:homies/ui/components/h_week_calendar.dart';
+import 'package:homies/ui/pages/create_home/settings_avatar_button.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -22,7 +23,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.refresh(userProvider);
+      ref.refresh(homeProvider);
     });
   }
 
@@ -43,28 +44,18 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
 
   @override
   void didPopNext() {
-    ref.refresh(userProvider);
+    ref.refresh(homeProvider);
   }
 
   @override
   Widget build(BuildContext context) {
-    final overviewAsync = ref.watch(overviewProvider);// TODO CHANGE DAI FORZA
+    final homeAsync = ref.watch(homeProvider);
 
-    return overviewAsync.when(
-      data: (overview) => Scaffold(
+    return homeAsync.when(
+      data: (home) => Scaffold(
         appBar: AppBar(
           title: HTitle(text: "Homies", style: context.texts.titleLarge),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 24.0),
-              child: GestureDetector(
-                onTap: () {
-                  if (context.mounted) context.push("/settings");
-                },
-                child: HAvatar(avatar: overview.user.avatar, size: 40),
-              ),
-            ),
-          ],
+          actions: [SettingsAvatarButton()],
           scrolledUnderElevation: 1,
           surfaceTintColor: context.colors.surface,
           backgroundColor: context.colors.surface,
@@ -73,21 +64,18 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
           ), // Shadow color
         ),
         backgroundColor: context.colors.surface,
-        
+
         bottomNavigationBar: HNavBar(currentIndex: 0),
 
         body: RefreshIndicator(
-          onRefresh: () => ref.refresh(overviewProvider.future),
+          onRefresh: () => ref.refresh(homeProvider.future),
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(24.0),
             children: [
               SizedBox(height: 48),
 
-              HTitle(
-                text: overview.home.name,
-                style: context.texts.headlineLarge,
-              ),
+              HTitle(text: home.name, style: context.texts.headlineLarge),
 
               SizedBox(height: 32),
 
@@ -98,10 +86,10 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
               Text("Today's Tasks", style: context.texts.headlineMedium),
 
               SizedBox(height: 12),
-
+              /*
               HTaskTile(
                 text: "Compra pane bene",
-                avatar: overview.user.avatar,
+                avatar: user.avatar,
                 onToggle: (completed) {},
               ),
 
@@ -112,6 +100,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
                 avatar: overview.user.avatar,
                 onToggle: (completed) {},
               ),
+              */
             ],
           ),
         ),
@@ -119,7 +108,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
       error: (e, stack) => Scaffold(
         backgroundColor: context.colors.surface,
         body: RefreshIndicator(
-          onRefresh: () => ref.refresh(overviewProvider.future),
+          onRefresh: () => ref.refresh(homeProvider.future),
           child: Center(
             child: Text(
               e is ErrorWithCode ? e.message : e.toString(),

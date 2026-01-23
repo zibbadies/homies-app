@@ -8,8 +8,11 @@ class SecureStorageService {
     await _storage.write(key: 'auth_token', value: token);
   }
 
-  Future<Token> getToken() async {
-    return Token(value: _storage.read(key: 'auth_token'));
+  Future<Token?> getToken() async {
+    final token = await _storage.read(key: 'auth_token');
+    if (token == null) return null;
+
+    return Token(value: token);
   }
 
   Future<void> deleteToken() async {

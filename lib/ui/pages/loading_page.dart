@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/data/models/error.dart';
-import 'package:homies/data/models/overview.dart';
+import 'package:homies/data/models/home.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/auth_provider.dart';
 import 'package:homies/providers/user_provider.dart';
@@ -13,8 +13,8 @@ class LoadingPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.refresh(overviewProvider);
-    ref.listen<AsyncValue<Overview>>(overviewProvider, (prev, next) {
+    ref.refresh(homeProvider);
+    ref.listen<AsyncValue<Home>>(homeProvider, (prev, next) {
       next.when(
         data: (_) => redirect(context, "/"),
         error: (e, _) {

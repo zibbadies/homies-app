@@ -26,7 +26,7 @@ class AuthRepository {
     await storage.deleteToken();
   }
 
-  Future<Token> getToken() async {
+  Future<Token?> getToken() async {
     return storage.getToken();
   }
 }

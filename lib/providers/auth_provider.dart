@@ -19,10 +19,10 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
   @override
   Future<AuthState> build() async {
-    final savedToken = await _repo.getToken();
+    final token = await _repo.getToken();
 
-    if (savedToken != null) {
-      return AuthState(isAuthenticated: true, token: savedToken);
+    if (token != null) {
+      return AuthState(isAuthenticated: true, token: token);
     }
 
     return const AuthState();
@@ -33,7 +33,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
     state = await AsyncValue.guard(() async {
       final token = await _repo.login(username, password);
-      return AuthState(isAuthenticated: true, token: token.token);
+      return AuthState(isAuthenticated: true, token: token);
     });
   }
 
@@ -42,7 +42,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
     state = await AsyncValue.guard(() async {
       final token = await _repo.register(username, password);
-      return AuthState(isAuthenticated: true, token: token.token);
+      return AuthState(isAuthenticated: true, token: token);
     });
   }
 
@@ -50,7 +50,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     // seocndo me non serve invalidare qua pero boh magari dopo non si sa mai
     // TODO: per qualche motivo se invalido qui poi non autentica piu nulla
     ref.invalidate(userProvider);
-    ref.invalidate(overviewProvider);
+    ref.invalidate(homeProvider);
     state = const AsyncData(AuthState(isAuthenticated: false));
   }
 

@@ -13,7 +13,7 @@ import 'package:homies/ui/components/h_title.dart';
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
-  void _showLeaveModal(BuildContext context) {
+  void _showLeaveModal(BuildContext context, String homeName) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -23,14 +23,14 @@ class SettingsPage extends ConsumerWidget {
       ),
       backgroundColor: context.colors.surface,
       barrierColor: context.colors.onSurface.withAlpha(120),
-      builder: (context) => const LeaveConfirmationModal(),
+      builder: (context) => LeaveConfirmationModal(homeName: homeName),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final overviewAsync = ref.watch(overviewProvider);
     final userAsync = ref.watch(userProvider);
+    final homeAsync = ref.watch(homeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -80,8 +80,8 @@ class SettingsPage extends ConsumerWidget {
                 },
               ),
 
-              overviewAsync.when(
-                data: (data) => Column(
+              homeAsync.when(
+                data: (home) => Column(
                   children: [
                     SizedBox(height: 12),
 
@@ -89,7 +89,7 @@ class SettingsPage extends ConsumerWidget {
                       text: "Leave Home",
                       color: context.colors.error,
                       textColor: context.colors.onError,
-                      onPressed: () => _showLeaveModal(context),
+                      onPressed: () => _showLeaveModal(context, home.name),
                     ),
                   ],
                 ),
@@ -105,7 +105,9 @@ class SettingsPage extends ConsumerWidget {
 }
 
 class LeaveConfirmationModal extends ConsumerStatefulWidget {
-  const LeaveConfirmationModal({super.key});
+  final String homeName;
+
+  const LeaveConfirmationModal({super.key, required this.homeName});
 
   @override
   ConsumerState<LeaveConfirmationModal> createState() =>
@@ -142,7 +144,7 @@ class _LeaveConfirmationModalState
 
               children: [
                 Text(
-                  "Are you sure you\nwant to leave ${ref.read(overviewProvider).valueOrNull?.home.name}?",
+                  "Are you sure you\nwant to leave ${widget.homeName}?",
                   style: context.texts.headlineSmall!.copyWith(),
                   textAlign: TextAlign.left,
                 ),
@@ -180,7 +182,7 @@ class _LeaveConfirmationModalState
                         data: (success) {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (success) {
-                              ref.invalidate(overviewProvider);
+                              ref.invalidate(homeProvider);
                               Navigator.pop(context);
                               context.go('/create_home');
                             }

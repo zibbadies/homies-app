@@ -12,7 +12,7 @@ class HomeGuard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(overviewProvider, (prev, next) {
+    ref.listen(homeProvider, (prev, next) {
       next.when(
         data: (data) => null,
         error: (e, __) {
