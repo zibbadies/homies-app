@@ -15,7 +15,7 @@ class DioClient {
         onRequest: (options, handler) async {
           final token = await storage.getToken();
           if (token != null) {
-            options.headers['Authorization'] = token;
+            options.headers['Authorization'] = token.value;
           }
           return handler.next(options);
         },

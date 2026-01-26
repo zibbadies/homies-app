@@ -14,15 +14,15 @@ class TodoPage extends ConsumerStatefulWidget {
   const TodoPage({super.key});
 
   @override
-  ConsumerState<TodoPage> createState() => _HomePageState();
+  ConsumerState<TodoPage> createState() => _TodoPageState();
 }
 
-class _HomePageState extends ConsumerState<TodoPage> with RouteAware {
+class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.refresh(overviewProvider);
+      // ref.refresh(overviewProvider);
     });
   }
 
@@ -43,14 +43,15 @@ class _HomePageState extends ConsumerState<TodoPage> with RouteAware {
 
   @override
   void didPopNext() {
-    ref.refresh(overviewProvider);
+    // ref.refresh(overviewProvider);
   }
 
   @override
   Widget build(BuildContext context) {
-    final overviewAsync = ref.watch(overviewProvider);
+    return Placeholder();
+    //final overviewAsync = ref.watch(overviewProvider);
 
-    return overviewAsync.when(
+    /* return overviewAsync.when(
       data: (overview) => Scaffold(
         appBar: AppBar(
           title: HTitle(text: "Homies", style: context.texts.titleLarge),
@@ -121,6 +122,6 @@ class _HomePageState extends ConsumerState<TodoPage> with RouteAware {
         ),
       ),
       loading: () => Text("Loading"),
-    );
+    ); */
   }
 }
