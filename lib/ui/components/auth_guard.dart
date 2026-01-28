@@ -18,10 +18,7 @@ class AuthGuard extends ConsumerWidget {
         },
         error: (e, __) {
           if (e is ErrorWithCode) {
-            if (e.code == "user_not_in_house") {
-              return redirect(context, "/create_home");
-            }
-            if (e.code == "not_authenticated") {
+            if (["not_authenticated", "user_not_found"].contains(e.code)) {
               return redirect(context, "/welcome");
             }
           }

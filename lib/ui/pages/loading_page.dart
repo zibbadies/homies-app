@@ -19,7 +19,7 @@ class LoadingPage extends ConsumerWidget {
         data: (_) => redirect(context, "/"),
         error: (e, _) {
           if (e is ErrorWithCode) {
-            if (e.code == "not_authenticated") {
+            if (["not_authenticated", "user_not_found"].contains(e.code)) {
               ref.read(authProvider.notifier).reset();
               redirect(context, "/register");
             } else if (e.code == "user_not_in_house") {

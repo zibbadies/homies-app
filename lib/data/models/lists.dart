@@ -23,6 +23,12 @@ class ListId {
   }
 }
 
+class ListsProvider {
+  final ListId todo;
+  final ListId shopping;
+  ListsProvider({required this.todo, required this.shopping});
+}
+
 class ItemsResponse {
   final List<Item> items;
 

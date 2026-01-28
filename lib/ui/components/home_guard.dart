@@ -20,9 +20,6 @@ class HomeGuard extends ConsumerWidget {
             if (e.code == "user_not_in_house") {
               return redirect(context, "/create_home");
             }
-            if (e.code == "not_authenticated") {
-              return redirect(context, "/welcome");
-            }
           }
         },
         loading: () => null,

@@ -3,12 +3,14 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/data/models/error.dart';
 import 'package:homies/extensions/theme_extension.dart';
+import 'package:homies/providers/lists_provider.dart';
 import 'package:homies/providers/user_provider.dart';
 import 'package:homies/ui/components/h_avatar.dart';
 import 'package:homies/ui/components/h_navbar.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_task_tile.dart';
 import 'package:homies/ui/components/h_week_calendar.dart';
+import 'package:homies/ui/pages/create_home/settings_avatar_button.dart';
 
 class TodoPage extends ConsumerStatefulWidget {
   const TodoPage({super.key});
@@ -48,7 +50,30 @@ class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return Placeholder();
+    final todoList = ref.watch(todoListProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: HTitle(text: "Homies", style: context.texts.titleLarge),
+        actions: [SettingsAvatarButton()],
+        scrolledUnderElevation: 1,
+        surfaceTintColor: context.colors.surface,
+        backgroundColor: context.colors.surface,
+        shadowColor: context.colors.onSurface.withValues(
+          alpha: 0.25,
+        ), // Shadow color
+      ),
+      backgroundColor: context.colors.surface,
+
+      bottomNavigationBar: HNavBar(currentIndex: 1),
+
+      body: todoList.when(
+        data: (data) => Text(data.toString()),
+        error: (e, _) => Text("Error: $e"),
+        loading: () => null,
+      ),
+    );
+
     //final overviewAsync = ref.watch(overviewProvider);
 
     /* return overviewAsync.when(

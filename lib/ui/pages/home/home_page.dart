@@ -119,7 +119,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
           ),
         ),
       ),
-      loading: () => Text("Loading"),
+      loading: () => Text("Loading"), // TODO: dai vabbe forza
     );
   }
 }
