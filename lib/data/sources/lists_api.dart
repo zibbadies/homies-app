@@ -43,7 +43,7 @@ class ListsApi {
     } catch (e) {
       throw ErrorWithCode(
         code: "internal_error",
-        message: 'An unexpected error occured',
+        message: 'An unexpected error occured: ${e.toString()}',
       );
     }
   }

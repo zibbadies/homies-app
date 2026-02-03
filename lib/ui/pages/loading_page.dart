@@ -8,6 +8,8 @@ import 'package:homies/providers/user_provider.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/utils/redirect.dart';
 
+
+// Sarebbe tipo il aso di eliminare questa pagina e usare la home come pagina loading, e capire perche non vanno i guard;
 class LoadingPage extends ConsumerWidget {
   const LoadingPage({super.key});
 

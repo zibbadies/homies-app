@@ -19,16 +19,14 @@ final todoListProvider = AsyncNotifierProvider<TodoListNotifier, List<Item>>(
 
 // una quantita di acqua esagerata sta venendo usata per creare homies.
 class TodoListNotifier extends AsyncNotifier<List<Item>> {
-  late final ListsRepository _repo;
-
   @override
   Future<List<Item>> build() async {
-    _repo = ref.read(listsRepositoryProvider);
+    final repo = ref.read(listsRepositoryProvider);
 
     final lists = await ref.watch(listsProvider.future);
     final todo = lists.todo;
 
-    return _repo.getItemsFromList(todo.id);
+    return repo.getItemsFromList(todo.id);
   }
 
   /*

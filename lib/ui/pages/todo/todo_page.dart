@@ -67,10 +67,30 @@ class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
 
       bottomNavigationBar: HNavBar(currentIndex: 1),
 
-      body: todoList.when(
-        data: (data) => Text(data.toString()),
-        error: (e, _) => Text("Error: $e"),
-        loading: () => null,
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(todoListProvider.notifier).refresh(),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(24.0),
+          children: [
+            todoList.when(
+              data: (data) => Column(
+                children: data
+                    .map(
+                      (item) => HTaskTile(
+                        text: item.text,
+                        avatar: ref.read(userProvider).value!.avatar,
+                        onToggle: (_) {},
+                      ),
+                    )
+                    .toList(),
+              ),
+              error: (e, _) =>
+                  Text("Error: ${e is ErrorWithCode ? e.message : e}"),
+              loading: () => Text("Loading"),
+            ),
+          ],
+        ),
       ),
     );
 

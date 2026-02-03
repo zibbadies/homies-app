@@ -45,13 +45,13 @@ class Item {
   final String id;
   final String text;
   final bool completed;
-  final User author;
+  final String authorId;
 
   const Item({
     required this.id,
     required this.text,
     required this.completed,
-    required this.author,
+    required this.authorId,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
@@ -59,7 +59,7 @@ class Item {
       id: json['id'],
       text: json['text'],
       completed: json['completed'],
-      author: json['author'],
+      authorId: json['author'],
     );
   }
 }
