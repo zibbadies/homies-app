@@ -1,5 +1,3 @@
-import 'package:homies/data/models/user.dart';
-
 class ListsResponse {
   final List<ListId> lists;
 

@@ -1,50 +1,34 @@
 import 'package:dio/dio.dart';
-import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/lists.dart';
+import 'package:homies/utils/handle_request.dart';
 
 class ListsApi {
   final Dio dio;
   ListsApi(this.dio);
 
   Future<ListsResponse> getLists() async {
-    try {
+    return handleDioRequest(() async {
       final res = await dio.get('/lists/');
       return ListsResponse.fromJson(res.data);
-    } on DioException catch (e) {
-      if (e.response?.data != null && e.response?.data is! String) {
-        final errorData = e.response!.data;
-        throw ErrorWithCode.fromJson(errorData);
-      }
-      throw ErrorWithCode(
-        code: "internal_error",
-        message: 'Network error occurred',
-      );
-    } catch (e) {
-      throw ErrorWithCode(
-        code: "internal_error",
-        message: 'An unexpected error occured',
-      );
-    }
+    });
   }
 
   Future<ItemsResponse> getItemsFromList(String listId) async {
-    try {
+    return handleDioRequest(() async {
       final res = await dio.get('/lists/$listId/');
       return ItemsResponse.fromJson(res.data);
-    } on DioException catch (e) {
-      if (e.response?.data != null && e.response?.data is! String) {
-        final errorData = e.response!.data;
-        throw ErrorWithCode.fromJson(errorData);
-      }
-      throw ErrorWithCode(
-        code: "internal_error",
-        message: 'Network error occurred',
-      );
-    } catch (e) {
-      throw ErrorWithCode(
-        code: "internal_error",
-        message: 'An unexpected error occured: ${e.toString()}',
-      );
-    }
+    });
+  }
+
+  // TODO: non so se conviene mettere return bool
+  // TODO: change to /item/:id
+  Future editItem(String text, String listId, String itemId) async {
+    return handleDioRequest(
+      () => dio.patch('/lists/$listId/$itemId', data: {'text': text}),
+    );
+  }
+
+  Future deletItem(String itemId) async {
+    return handleDioRequest(() => dio.delete('/item/$itemId'));
   }
 }
