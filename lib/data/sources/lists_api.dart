@@ -20,6 +20,12 @@ class ListsApi {
     });
   }
 
+  Future addItemToList(String text, String listId) async {
+    return handleDioRequest(
+      () => dio.put('/lists/$listId/', data: {'text': text}),
+    );
+  }
+
   // TODO: non so se conviene mettere return bool
   // TODO: change to /item/:id
   Future editItem(String text, String listId, String itemId) async {

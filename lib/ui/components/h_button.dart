@@ -6,9 +6,13 @@ class HButton extends StatelessWidget {
     super.key,
     this.text = "",
     this.icon,
+    this.iconSize = 24,
     required this.color,
     this.textColor,
     this.width = double.infinity,
+    this.height = 48,
+    this.borderRadius = 16,
+    this.shadow = true,
     this.loading = false,
     this.loadingColor,
     this.onPressed,
@@ -17,8 +21,12 @@ class HButton extends StatelessWidget {
   final String text;
   final Color color;
   final IconData? icon;
+  final double iconSize;
   final Color? textColor;
   final double width;
+  final double height;
+  final double borderRadius;
+  final bool shadow;
   final bool loading;
   final Color? loadingColor;
   final VoidCallback? onPressed;
@@ -27,18 +35,21 @@ class HButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: context.colors.onSurface.withValues(alpha: 0.25),
-            spreadRadius: 0,
-            blurRadius: 2,
-            offset: Offset(0, 1),
-          ),
-        ],
-        borderRadius: BorderRadius.circular(16),
+        boxShadow: shadow
+            ? [
+                BoxShadow(
+                  color: context.colors.onSurface.withValues(alpha: 0.25),
+                  spreadRadius: 0,
+                  blurRadius: 2,
+                  offset: Offset(0, 1),
+                ),
+              ]
+            : null,
+        borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: SizedBox(
         width: width,
+        height: height,
         child: TextButton(
           onPressed: () {
             // unfocus all before the callback
@@ -46,13 +57,14 @@ class HButton extends StatelessWidget {
             if (onPressed != null) onPressed!();
           },
           style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
             backgroundColor: color,
             foregroundColor: textColor ?? context.colors.onSurface,
 
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
-            fixedSize: const Size(double.infinity, 48),
+            fixedSize: const Size(double.infinity, double.infinity),
           ),
           child: loading
               ? SizedBox(
@@ -70,7 +82,7 @@ class HButton extends StatelessWidget {
                     if (icon != null) ...[
                       Icon(
                         icon,
-                        size: 24,
+                        size: iconSize,
                         color: textColor ?? context.colors.onSurface,
                       ),
                       if (text.isNotEmpty) ...[const SizedBox(width: 8)],

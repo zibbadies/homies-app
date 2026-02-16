@@ -92,8 +92,7 @@ class _HomePageState extends ConsumerState<HomePage> with RouteAware {
                 avatar: user.avatar,
                 onToggle: (completed) {},
               ),
-
-              SizedBox(height: 12),
+12),
 
               HTaskTile(
                 text: "Strangola Capo Zibbadies aaaa",

@@ -9,6 +9,7 @@ class HLabeledInput extends StatefulWidget {
     required this.hint,
     required this.icon,
     required this.controller,
+    this.keyboardType = TextInputType.text,
     this.obscurable = false,
   });
 
@@ -16,6 +17,7 @@ class HLabeledInput extends StatefulWidget {
   final String hint;
   final IconData icon;
   final TextEditingController controller;
+  final TextInputType keyboardType;
   final bool obscurable;
 
   @override
@@ -44,6 +46,7 @@ class _HLabeledInputState extends State<HLabeledInput> {
         ),
         TextFormField(
           controller: widget.controller,
+          keyboardType: widget.keyboardType,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Cannot be empty.';

@@ -102,6 +102,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               hint: "Splarpo",
               icon: LucideIcons.user_round,
               controller: usernameController,
+              keyboardType: TextInputType.name,
             ),
 
             SizedBox(height: 8),
@@ -111,6 +112,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               hint: "Pa\$\$w0rd",
               icon: LucideIcons.lock,
               controller: passwordController,
+              keyboardType: TextInputType.visiblePassword,
               obscurable: true,
             ),
 

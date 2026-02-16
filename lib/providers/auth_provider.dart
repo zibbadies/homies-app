@@ -3,6 +3,7 @@ import 'package:homies/data/models/auth.dart';
 import 'package:homies/data/repos/auth_repo.dart';
 import 'package:homies/data/sources/auth_api.dart';
 import 'package:homies/providers/dio_provider.dart';
+import 'package:homies/providers/lists_provider.dart';
 import 'package:homies/providers/storage_provider.dart';
 import 'package:homies/providers/user_provider.dart';
 
@@ -51,6 +52,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     // TODO: per qualche motivo se invalido qui poi non autentica piu nulla
     ref.invalidate(userProvider);
     ref.invalidate(homeProvider);
+    ref.invalidate(listsProvider);
     state = const AsyncData(AuthState(isAuthenticated: false));
   }
 

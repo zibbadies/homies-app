@@ -23,12 +23,15 @@ class ListsRepository {
     return res.items;
   }
 
+  Future addItemToList(String text, String listId) =>
+      api.addItemToList(text, listId);
+
   Future editItem(String text, String listId, String itemId) async {
     final res = await api.editItem(text, listId, itemId);
 
     return res.items;
   }
-  
+
   Future deleteItem(String text, String listId, String itemId) async {
     final res = await api.editItem(text, listId, itemId);
 

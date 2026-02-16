@@ -3,6 +3,7 @@ import 'package:homies/providers/dio_provider.dart';
 import 'package:homies/data/sources/lists_api.dart';
 import 'package:homies/data/repos/lists_repo.dart';
 import 'package:homies/data/models/lists.dart';
+import 'package:homies/providers/user_provider.dart';
 
 final listsApiProvider = Provider((ref) => ListsApi(ref.watch(dioProvider)));
 final listsRepositoryProvider = Provider(
@@ -21,36 +22,37 @@ final todoListProvider = AsyncNotifierProvider<TodoListNotifier, List<Item>>(
 class TodoListNotifier extends AsyncNotifier<List<Item>> {
   @override
   Future<List<Item>> build() async {
-    final repo = ref.read(listsRepositoryProvider);
-
-    final lists = await ref.watch(listsProvider.future);
+    final lists = await ref.read(listsProvider.future);
     final todo = lists.todo;
 
-    return repo.getItemsFromList(todo.id);
+    return ref.read(listsRepositoryProvider).getItemsFromList(todo.id);
   }
 
-  /*
   /// ➕ Add item (optimistic)
   Future<void> addItem(String text) async {
     final current = state.value ?? [];
 
-    // optimistic UI
-    state = AsyncData([
-      ...current,
-      Item.temp(text), // or however you create temp items
-    ]);
+    final newItem = Item(
+      id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+      text: text,
+      authorId: ref.read(userProvider).valueOrNull?.uid ?? "DaiForza",
+      completed: false,
+    );
+
+    state = AsyncValue.data([newItem, ...current]);
 
     try {
-      final newItem = await _repo.addItem(text);
-      state = AsyncData([
-        ...current,
-        newItem,
-      ]);
-    } catch (e, st) {
-      state = AsyncError(e, st);
+      final lists = await ref.read(listsProvider.future);
+      await ref
+          .read(listsRepositoryProvider)
+          .addItemToList(text, lists.todo.id);
+    } catch (e, _) {
+      state = AsyncValue.data(current);
+      rethrow;
     }
   }
 
+  /*
   /// ❌ Delete item (optimistic)
   Future<void> deleteItem(String id) async {
     final current = state.value ?? [];
@@ -68,9 +70,4 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
   }
 
 */
-  /// 🔄 Full refresh
-  Future<void> refresh() async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(build);
-  }
 }

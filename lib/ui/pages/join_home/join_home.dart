@@ -112,6 +112,7 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
               hint: "XXXXXX",
               icon: LucideIcons.house,
               controller: _inviteCodeController,
+              // TODO: add personalized keebType
             ),
 
             SizedBox(height: 24),

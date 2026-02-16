@@ -32,7 +32,7 @@ final theme = ThemeData(
     titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
     titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
 
-    bodyLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+    bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
     bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
     
     labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

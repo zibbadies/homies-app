@@ -53,7 +53,6 @@ class _HTaskTileState extends State<HTaskTile> {
               onToggle: () {
                 // Update the modal UI
                 setModalState(() => localCompleted = !localCompleted);
-
                 toggleComplete();
               },
               onDelete: () {
@@ -83,7 +82,7 @@ class _HTaskTileState extends State<HTaskTile> {
           },
         );
       },
-    );
+    ).then((_) => FocusManager.instance.primaryFocus?.unfocus());
   }
 
   @override
@@ -106,7 +105,7 @@ class _HTaskTileState extends State<HTaskTile> {
       child: ListTile(
         onTap: () {
           showInfo();
-          widget.onToggle(_completed);
+          // widget.onToggle(_completed); TODO: i don't know why this was here
         },
         horizontalTitleGap: 8,
 
@@ -222,11 +221,9 @@ class _InfoModalState extends State<InfoModal> {
                         keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
                           hintText: "Write something...",
-                          border: InputBorder.none, // removes the underline
-                          enabledBorder:
-                              InputBorder.none, // also remove when not focused
-                          focusedBorder:
-                              InputBorder.none, // also remove when focused
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
                         ),
                       )
                     : Text(widget.text, style: context.texts.bodyLarge),

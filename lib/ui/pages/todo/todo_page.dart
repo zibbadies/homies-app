@@ -1,15 +1,17 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/data/models/error.dart';
 import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/providers/lists_provider.dart';
 import 'package:homies/providers/user_provider.dart';
-import 'package:homies/ui/components/h_avatar.dart';
+import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_navbar.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_task_tile.dart';
-import 'package:homies/ui/components/h_week_calendar.dart';
 import 'package:homies/ui/pages/create_home/settings_avatar_button.dart';
 
 class TodoPage extends ConsumerStatefulWidget {
@@ -52,65 +54,12 @@ class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
   Widget build(BuildContext context) {
     final todoList = ref.watch(todoListProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: HTitle(text: "Homies", style: context.texts.titleLarge),
-        actions: [SettingsAvatarButton()],
-        scrolledUnderElevation: 1,
-        surfaceTintColor: context.colors.surface,
-        backgroundColor: context.colors.surface,
-        shadowColor: context.colors.onSurface.withValues(
-          alpha: 0.25,
-        ), // Shadow color
-      ),
-      backgroundColor: context.colors.surface,
-
-      bottomNavigationBar: HNavBar(currentIndex: 1),
-
-      body: RefreshIndicator(
-        onRefresh: () => ref.read(todoListProvider.notifier).refresh(),
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(24.0),
-          children: [
-            todoList.when(
-              data: (data) => Column(
-                children: data
-                    .map(
-                      (item) => HTaskTile(
-                        text: item.text,
-                        avatar: ref.read(userProvider).value!.avatar,
-                        onToggle: (_) {},
-                      ),
-                    )
-                    .toList(),
-              ),
-              error: (e, _) =>
-                  Text("Error: ${e is ErrorWithCode ? e.message : e}"),
-              loading: () => Text("Loading"),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    //final overviewAsync = ref.watch(overviewProvider);
-
-    /* return overviewAsync.when(
-      data: (overview) => Scaffold(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
         appBar: AppBar(
           title: HTitle(text: "Homies", style: context.texts.titleLarge),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 24.0),
-              child: GestureDetector(
-                onTap: () {
-                  if (context.mounted) context.push("/settings");
-                },
-                child: HAvatar(avatar: overview.user.avatar, size: 40),
-              ),
-            ),
-          ],
+          actions: [SettingsAvatarButton()],
           scrolledUnderElevation: 1,
           surfaceTintColor: context.colors.surface,
           backgroundColor: context.colors.surface,
@@ -123,50 +72,120 @@ class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
         bottomNavigationBar: HNavBar(currentIndex: 1),
 
         body: RefreshIndicator(
-          onRefresh: () => ref.refresh(overviewProvider.future),
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(24.0),
-            children: [
-              HTitle(
-                text: "Todos",
-                style: context.texts.headlineLarge,
-              ),
+          onRefresh: () async => ref.invalidate(todoListProvider),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: todoList.when(
+              data: (data) => ListView(
+                clipBehavior: Clip.none,
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(height: 24),
 
-              SizedBox(height: 24),
+                  NewTaskTile(),
 
-              HTaskTile(
-                text: "Compra pane bene",
-                avatar: overview.user.avatar,
-                onToggle: (completed) {},
-              ),
+                  SizedBox(height: 12),
 
-              SizedBox(height: 12),
+                  ...data.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: HTaskTile(
+                        key: ValueKey(item.id),
+                        text: item.text,
+                        avatar: ref.read(userProvider).value!.avatar,
+                        onToggle: (_) {},
+                      ),
+                    ),
+                  ),
 
-              HTaskTile(
-                text: "Strangola Capo Zibbadies aaaa",
-                avatar: overview.user.avatar,
-                onToggle: (completed) {},
+                  SizedBox(height: 24),
+                ],
               ),
-            ],
-          ),
-        ),
-      ),
-      error: (e, stack) => Scaffold(
-        backgroundColor: context.colors.surface,
-        body: RefreshIndicator(
-          onRefresh: () => ref.refresh(overviewProvider.future),
-          child: Center(
-            child: Text(
-              e is ErrorWithCode ? e.message : e.toString(),
-              style: context.texts.titleSmall!.copyWith(
-                color: context.colors.error,
+              error: (e, _) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      e is ErrorWithCode ? e.message : 'Something went wrong',
+                      style: context.texts.titleSmall!.copyWith(
+                        color: context.colors.error,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    HButton(
+                      onPressed: () => ref.invalidate(todoListProvider),
+                      text: "Retry",
+                      color: context.colors.secondary,
+                      textColor: context.colors.onSecondary,
+                    ),
+                  ],
+                ),
               ),
+              loading: () => Text("Loading"),
             ),
           ),
         ),
       ),
-      loading: () => Text("Loading"),
-    ); */
+    );
+  }
+}
+
+class NewTaskTile extends ConsumerWidget {
+  NewTaskTile({super.key});
+
+  final newTaskController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: context.colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: context.colors.onSurface.withValues(alpha: 0.25),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+
+      child: ListTile(
+        contentPadding: const EdgeInsets.only(left: 16, right: 12),
+        minVerticalPadding: 0,
+
+        title: TextField(
+          autofocus: false,
+          controller: newTaskController,
+          style: context.texts.bodyLarge!.copyWith(
+            color: context.colors.onSurface,
+          ),
+          maxLines: null,
+          keyboardType: TextInputType.text,
+          decoration: InputDecoration(
+            hintText: "New Task...",
+            hintStyle: context.texts.bodyLarge!.copyWith(
+              color: context.colors.onSecondary.withValues(alpha: 0.6),
+            ),
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+          ),
+        ),
+        trailing: HButton(
+          onPressed: () => ref
+              .read(todoListProvider.notifier)
+              .addItem(newTaskController.text),
+          height: 36,
+          width: 36,
+          borderRadius: 8,
+          iconSize: 20,
+          shadow: false,
+          color: context.colors.primary,
+          icon: LucideIcons.plus,
+        ),
+      ),
+    );
   }
 }

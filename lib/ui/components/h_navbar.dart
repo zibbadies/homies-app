@@ -24,7 +24,7 @@ class HNavBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       decoration: BoxDecoration(
         color: context.colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(0),
         boxShadow: [
           BoxShadow(
             color: context.colors.onSurface.withValues(alpha: 0.25),
@@ -43,6 +43,9 @@ class HNavBar extends StatelessWidget {
               onPressed: () => context.go(_items[index].url),
 
               width: 80,
+              borderRadius: 8,
+              shadow: false,
+
               color: index == currentIndex
                   ? context.colors.primary
                   : context.colors.secondary,

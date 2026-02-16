@@ -93,6 +93,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
             hint: "Splarpo",
             icon: LucideIcons.user_round,
             controller: usernameController,
+            keyboardType: TextInputType.name,
           ),
 
           SizedBox(height: 8),
@@ -103,6 +104,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
             icon: LucideIcons.lock,
             controller: passwordController,
             obscurable: true,
+            keyboardType: TextInputType.visiblePassword,
           ),
 
           SizedBox(height: 24),
