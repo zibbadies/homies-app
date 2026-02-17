@@ -1,19 +1,23 @@
 import "package:flutter/material.dart";
 import "package:flutter_lucide/flutter_lucide.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import 'package:homies/extensions/theme_extension.dart';
 import "package:homies/data/models/avatar.dart";
+import "package:homies/providers/lists_provider.dart";
 import "package:homies/ui/components/h_avatar.dart";
 import "package:homies/ui/components/h_button.dart";
 
 class HTaskTile extends StatefulWidget {
+  final String id;
   final String text;
-  final Avatar avatar;
+  final Avatar? avatar;
   final void Function(bool) onToggle;
 
   const HTaskTile({
     super.key,
+    required this.id,
     required this.text,
-    required this.avatar,
+    this.avatar,
     required this.onToggle,
   });
 
@@ -47,6 +51,7 @@ class _HTaskTileState extends State<HTaskTile> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return InfoModal(
+              id: widget.id,
               text: widget.text,
               completed: localCompleted,
 
@@ -159,33 +164,43 @@ class _HTaskTileState extends State<HTaskTile> {
   }
 }
 
-class InfoModal extends StatefulWidget {
+class InfoModal extends ConsumerStatefulWidget {
   const InfoModal({
     super.key,
+    required this.id,
     required this.text,
     required this.completed,
     required this.onToggle,
     required this.onDelete,
   });
 
+  final String id;
   final String text;
   final bool completed;
   final VoidCallback onToggle;
   final VoidCallback onDelete;
 
   @override
-  State<InfoModal> createState() => _InfoModalState();
+  ConsumerState<InfoModal> createState() => _InfoModalState();
 }
 
-class _InfoModalState extends State<InfoModal> {
+class _InfoModalState extends ConsumerState<InfoModal> {
   bool _editing = false;
+  String _text = "";
   final controller = TextEditingController();
 
   void toggleEdit() {
     setState(() {
       _editing = !_editing;
     });
-    if (_editing) controller.text = widget.text;
+    if (_editing) controller.text = _text;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _text = widget.text;
+    controller.text = _text;
   }
 
   @override
@@ -221,12 +236,17 @@ class _InfoModalState extends State<InfoModal> {
                         keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
                           hintText: "Write something...",
+                          hintStyle: context.texts.bodyLarge!.copyWith(
+                            color: context.colors.onSecondary.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
                         ),
                       )
-                    : Text(widget.text, style: context.texts.bodyLarge),
+                    : Text(_text, style: context.texts.bodyLarge),
 
                 SizedBox(height: 48),
 
@@ -247,7 +267,13 @@ class _InfoModalState extends State<InfoModal> {
                       Expanded(
                         child: HButton(
                           text: "Edit",
-                          onPressed: toggleEdit,
+                          onPressed: () {
+                            ref
+                                .read(todoListProvider.notifier)
+                                .editItem(controller.text, widget.id);
+                            setState(() => _text = controller.text);
+                            toggleEdit();
+                          },
                           color: context.colors.primary,
                           textColor: context.colors.onPrimary,
                         ),

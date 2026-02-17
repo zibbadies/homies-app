@@ -28,7 +28,6 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
     return ref.read(listsRepositoryProvider).getItemsFromList(todo.id);
   }
 
-  /// ➕ Add item (optimistic)
   Future<void> addItem(String text) async {
     final current = state.value ?? [];
 
@@ -50,6 +49,12 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
       state = AsyncValue.data(current);
       rethrow;
     }
+  }
+
+  Future<void> editItem(String text, String id) async {
+    final lists = await ref.read(listsProvider.future);
+    await ref.read(listsRepositoryProvider).editItem(text, lists.todo.id, id);
+    ref.invalidateSelf();
   }
 
   /*

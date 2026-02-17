@@ -1,8 +1,6 @@
-import 'dart:ffi';
-
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/data/models/error.dart';
 import 'package:homies/extensions/theme_extension.dart';
@@ -53,6 +51,8 @@ class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
   @override
   Widget build(BuildContext context) {
     final todoList = ref.watch(todoListProvider);
+    final user = ref.read(userProvider).value!;
+    final home = ref.read(homeProvider).value!;
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -91,8 +91,15 @@ class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
                       padding: const EdgeInsets.only(bottom: 12.0),
                       child: HTaskTile(
                         key: ValueKey(item.id),
+                        id: item.id,
                         text: item.text,
-                        avatar: ref.read(userProvider).value!.avatar,
+                        avatar: item.authorId == user.uid
+                            ? user.avatar
+                            : home.members
+                                  .firstWhereOrNull(
+                                    (m) => m.uid == item.authorId,
+                                  )
+                                  ?.avatar,
                         onToggle: (_) {},
                       ),
                     ),
@@ -161,7 +168,7 @@ class NewTaskTile extends ConsumerWidget {
           style: context.texts.bodyLarge!.copyWith(
             color: context.colors.onSurface,
           ),
-          maxLines: null,
+          maxLines: 1,
           keyboardType: TextInputType.text,
           decoration: InputDecoration(
             hintText: "New Task...",
@@ -172,6 +179,8 @@ class NewTaskTile extends ConsumerWidget {
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
           ),
+          onSubmitted: (value) =>
+              ref.read(todoListProvider.notifier).addItem(value),
         ),
         trailing: HButton(
           onPressed: () => ref

@@ -1,7 +1,19 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:homies/data/models/avatar.dart';
-import 'package:homies/extensions/theme_extension.dart';
+
+// TODO: chiedere a MR codice l'avatar
+const Avatar sadGrayAvatar = Avatar(
+  bgColor: 'D5D5D5',
+  faceColor: '424242',
+  faceX: 33.399338,
+  faceY: 15.339521,
+  leX: 0.50351334,
+  leY: 4.794397,
+  reX: 11.496487,
+  reY: 3.4529395,
+  bezier: '1 2 3 0 6 1', // downward curve (sad)
+);
 
 class HAvatar extends StatelessWidget {
   final Avatar? avatar;
@@ -11,20 +23,17 @@ class HAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String svgData = avatar != null
-        ? '''
+    final avatarNullSafe = avatar ?? sadGrayAvatar;
+
+    final String svgData =
+        '''
 <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
-    <circle r="40" cx="40" cy="40" fill="#${avatar!.bgColor}"/>
-    <g transform="translate(${avatar!.faceX}, ${avatar!.faceY}) scale(2)">
-        <path d="M4 10c${avatar!.bezier}" stroke="#${avatar!.faceColor}" stroke-width="1.5" fill="none" stroke-linecap="round"></path>
-        <rect x="${avatar!.leX}" y="${avatar!.leY}" width="2" height="2" rx="1" stroke="none" fill="#${avatar!.faceColor}"></rect>
-        <rect x="${avatar!.reX}" y="${avatar!.reY}" width="2" height="2" rx="1" stroke="none" fill="#${avatar!.faceColor}"></rect>
+    <circle r="40" cx="40" cy="40" fill="#${avatarNullSafe.bgColor}"/>
+    <g transform="translate(${avatarNullSafe.faceX}, ${avatarNullSafe.faceY}) scale(2)">
+        <path d="M4 10c${avatarNullSafe.bezier}" stroke="#${avatarNullSafe.faceColor}" stroke-width="1.5" fill="none" stroke-linecap="round"></path>
+        <rect x="${avatarNullSafe.leX}" y="${avatarNullSafe.leY}" width="2" height="2" rx="1" stroke="none" fill="#${avatarNullSafe.faceColor}"></rect>
+        <rect x="${avatarNullSafe.reX}" y="${avatarNullSafe.reY}" width="2" height="2" rx="1" stroke="none" fill="#${avatarNullSafe.faceColor}"></rect>
     </g>
-</svg>
-'''
-        : '''
-<svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
-    <circle r="40" cx="40" cy="40" fill="#${context.colors.secondary}"/>
 </svg>
 ''';
 
