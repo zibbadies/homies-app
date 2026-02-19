@@ -75,9 +75,9 @@ class _HTaskTileState extends State<HTaskTile> {
                     ),
                     backgroundColor: context.colors.surface,
                     builder: (_) => DeleteConfirmModal(
+                      id: widget.id,
                       onCancel: () {
                         Navigator.pop(this.context);
-                        showInfo();
                       },
                     ),
                   );
@@ -326,11 +326,23 @@ class _InfoModalState extends ConsumerState<InfoModal> {
   }
 }
 
-class DeleteConfirmModal extends StatelessWidget {
-  const DeleteConfirmModal({super.key, required this.onCancel});
+class DeleteConfirmModal extends ConsumerStatefulWidget {
+    const DeleteConfirmModal({
+        super.key,
+        required this.id,
+        required this.onCancel
+    });
 
-  final VoidCallback onCancel;
+    final String id;
+    final VoidCallback onCancel;
 
+    @override
+    ConsumerState<DeleteConfirmModal> createState() => _DeleteConfirmModalState();
+}
+
+
+
+class _DeleteConfirmModalState extends ConsumerState<DeleteConfirmModal> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -368,7 +380,12 @@ class DeleteConfirmModal extends StatelessWidget {
                         text: "Delete",
                         color: context.colors.error,
                         textColor: context.colors.onError,
-                        onPressed: () {},
+                        onPressed: () {
+                            ref
+                                .read(todoListProvider.notifier)
+                                .deleteItem(widget.id);
+                            widget.onCancel(); // LEGGIMI: non so se va bene
+                          },
                       ),
                     ),
 
@@ -379,7 +396,7 @@ class DeleteConfirmModal extends StatelessWidget {
                         text: "Cancel",
                         color: context.colors.secondary,
                         textColor: context.colors.onSecondary,
-                        onPressed: onCancel,
+                        onPressed: widget.onCancel,
                       ),
                     ),
                   ],

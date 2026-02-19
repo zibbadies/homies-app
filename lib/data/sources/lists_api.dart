@@ -34,7 +34,7 @@ class ListsApi {
     );
   }
 
-  Future deletItem(String itemId) async {
-    return handleDioRequest(() => dio.delete('/item/$itemId'));
+  Future deleteItem(String listId, String itemId) async {
+    return handleDioRequest(() => dio.delete('/lists/$listId/$itemId'));
   }
 }

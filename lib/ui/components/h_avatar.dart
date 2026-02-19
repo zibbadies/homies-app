@@ -4,15 +4,15 @@ import 'package:homies/data/models/avatar.dart';
 
 // TODO: chiedere a MR codice l'avatar
 const Avatar sadGrayAvatar = Avatar(
-  bgColor: 'D5D5D5',
+  bgColor: '999',
   faceColor: '424242',
-  faceX: 33.399338,
-  faceY: 15.339521,
+  faceX: 27.167948412592324,
+  faceY: 32.877505448092954,
   leX: 0.50351334,
   leY: 4.794397,
   reX: 11.496487,
   reY: 3.4529395,
-  bezier: '1 2 3 0 6 1', // downward curve (sad)
+  bezier: '1 -2 4 -2 6 0', // downward curve (sad)
 );
 
 class HAvatar extends StatelessWidget {

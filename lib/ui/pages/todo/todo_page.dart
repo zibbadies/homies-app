@@ -183,9 +183,12 @@ class NewTaskTile extends ConsumerWidget {
               ref.read(todoListProvider.notifier).addItem(value),
         ),
         trailing: HButton(
-          onPressed: () => ref
-              .read(todoListProvider.notifier)
-              .addItem(newTaskController.text),
+          onPressed: () {
+            final text = newTaskController.text;
+            if (text.isEmpty) return;
+            ref.read(todoListProvider.notifier).addItem(text);
+            newTaskController.clear();
+          },
           height: 36,
           width: 36,
           borderRadius: 8,

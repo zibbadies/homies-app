@@ -57,6 +57,12 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
     ref.invalidateSelf();
   }
 
+  Future<void> deleteItem(String id) async {
+    final lists = await ref.read(listsProvider.future);
+    await ref.read(listsRepositoryProvider).deleteItem(lists.todo.id, id);
+    ref.invalidateSelf();
+  }
+
   /*
   /// ❌ Delete item (optimistic)
   Future<void> deleteItem(String id) async {
