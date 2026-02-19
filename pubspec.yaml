@@ -41,6 +41,7 @@ dependencies:
   flutter_lucide: ^1.6.2
   flutter_svg: ^2.2.1
   collection: ^1.19.1
+  share_plus: ^10.0.0
 
 dev_dependencies:
   flutter_test:

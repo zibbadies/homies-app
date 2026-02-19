@@ -7,6 +7,7 @@ import 'package:homies/extensions/theme_extension.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/settings_avatar_button.dart';
+import 'package:share_plus/share_plus.dart';
 
 class InviteAfterCreateHome extends StatelessWidget {
   final Invite invite;
@@ -81,7 +82,9 @@ class InviteAfterCreateHome extends StatelessWidget {
                 HButton(
                   text: "Share Link",
                   color: context.colors.primary,
-                  onPressed: () {},
+                  onPressed: () {
+                    Share.share('Hey! Why don\'t you join my home in homies? Here\'s the invite code: ${invite.code}\n\nYou can download the app here: https://github.com/zibbadies/homies-app '); // TODO: AGGIUNGERE LINK PLAY STORE HOMIES
+                  },
                 ),
 
                 SizedBox(height: 12),
