@@ -34,6 +34,14 @@ class ListsApi {
     );
   }
 
+  Future markItemAs(String listId, String itemId, bool completed) async {
+    return handleDioRequest(
+      () => dio.patch('/lists/$listId/$itemId', data: {
+        'completed': completed,
+      }),
+    );
+  }
+
   Future deleteItem(String listId, String itemId) async {
     return handleDioRequest(() => dio.delete('/lists/$listId/$itemId'));
   }

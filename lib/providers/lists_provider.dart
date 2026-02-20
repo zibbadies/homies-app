@@ -34,7 +34,7 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
     final newItem = Item(
       id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
       text: text,
-      authorId: ref.read(userProvider).valueOrNull?.uid ?? "DaiForza",
+      authorId: ref.read(userProvider).valueOrNull?.uid ?? "allmusic",
       completed: false,
     );
 
@@ -60,6 +60,14 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
   Future<void> deleteItem(String id) async {
     final lists = await ref.read(listsProvider.future);
     await ref.read(listsRepositoryProvider).deleteItem(lists.todo.id, id);
+    ref.invalidateSelf();
+  }
+
+  Future<void> markItemAs(bool completed, String id) async {
+    final lists = await ref.read(listsProvider.future);
+    await ref
+        .read(listsRepositoryProvider)
+        .markItemAs(lists.todo.id, id, completed);
     ref.invalidateSelf();
   }
 

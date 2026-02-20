@@ -32,6 +32,9 @@ class ListsRepository {
   Future deleteItem(String listId, String itemId) =>
       api.deleteItem(listId, itemId);
 
+  Future markItemAs(String listId, String itemId, bool completed) =>
+      api.markItemAs(listId, itemId, completed);
+
   /*Future deleteItem(String text, String listId, String itemId) async {
     final res = await api.editItem(text, listId, itemId);
 

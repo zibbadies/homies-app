@@ -7,7 +7,7 @@ import "package:homies/providers/lists_provider.dart";
 import "package:homies/ui/components/h_avatar.dart";
 import "package:homies/ui/components/h_button.dart";
 
-class HTaskTile extends StatefulWidget {
+class HTaskTile extends ConsumerStatefulWidget {
   final String id;
   final String text;
   final Avatar? avatar;
@@ -22,16 +22,17 @@ class HTaskTile extends StatefulWidget {
   });
 
   @override
-  State<HTaskTile> createState() => _HTaskTileState();
+  ConsumerState<HTaskTile> createState() => _HTaskTileState();
 }
 
-class _HTaskTileState extends State<HTaskTile> {
+class _HTaskTileState extends ConsumerState<HTaskTile> {
   bool _completed = false;
 
   void toggleComplete() {
     setState(() {
       _completed = !_completed;
     });
+    ref.read(todoListProvider.notifier).markItemAs(_completed, widget.id);
   }
 
   void showInfo() {
@@ -78,6 +79,7 @@ class _HTaskTileState extends State<HTaskTile> {
                       id: widget.id,
                       onCancel: () {
                         Navigator.pop(this.context);
+                        showInfo();
                       },
                     ),
                   );
@@ -327,20 +329,18 @@ class _InfoModalState extends ConsumerState<InfoModal> {
 }
 
 class DeleteConfirmModal extends ConsumerStatefulWidget {
-    const DeleteConfirmModal({
-        super.key,
-        required this.id,
-        required this.onCancel
-    });
+  const DeleteConfirmModal({
+    super.key,
+    required this.id,
+    required this.onCancel,
+  });
 
-    final String id;
-    final VoidCallback onCancel;
+  final String id;
+  final VoidCallback onCancel;
 
-    @override
-    ConsumerState<DeleteConfirmModal> createState() => _DeleteConfirmModalState();
+  @override
+  ConsumerState<DeleteConfirmModal> createState() => _DeleteConfirmModalState();
 }
-
-
 
 class _DeleteConfirmModalState extends ConsumerState<DeleteConfirmModal> {
   @override
@@ -381,11 +381,11 @@ class _DeleteConfirmModalState extends ConsumerState<DeleteConfirmModal> {
                         color: context.colors.error,
                         textColor: context.colors.onError,
                         onPressed: () {
-                            ref
-                                .read(todoListProvider.notifier)
-                                .deleteItem(widget.id);
-                            widget.onCancel(); // LEGGIMI: non so se va bene
-                          },
+                          ref
+                              .read(todoListProvider.notifier)
+                              .deleteItem(widget.id);
+                          Navigator.pop(this.context);
+                        },
                       ),
                     ),
 
