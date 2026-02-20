@@ -60,4 +60,23 @@ class Item {
       authorId: json['author'],
     );
   }
+
+  Item copyWith({String? id, String? text, bool? completed, String? authorId}) {
+    return Item(
+      id: id ?? this.id,
+      text: text ?? this.text,
+      completed: completed ?? this.completed,
+      authorId: authorId ?? this.authorId,
+    );
+  }
+}
+
+class ItemId {
+  final String id;
+
+  const ItemId({required this.id});
+
+  factory ItemId.fromJson(Map<String, dynamic> json) {
+    return ItemId(id: json['id']);
+  }
 }

@@ -18,7 +18,8 @@ class HomeGuard extends ConsumerWidget {
         error: (e, __) {
           if (e is ErrorWithCode) {
             if (e.code == "user_not_in_house") {
-              return redirect(context, "/create_home");
+  print("AAAAAAAAAAAAAAA");
+                return redirect(context, "/create_home");
             }
           }
         },

@@ -20,10 +20,11 @@ class ListsApi {
     });
   }
 
-  Future addItemToList(String text, String listId) async {
-    return handleDioRequest(
-      () => dio.put('/lists/$listId/', data: {'text': text}),
-    );
+  Future<String> addItemToList(String text, String listId) async {
+    return handleDioRequest(() async {
+      final res = await dio.put('/lists/$listId/', data: {'text': text});
+      return ItemId.fromJson(res.data).id;
+    });
   }
 
   // TODO: non so se conviene mettere return bool
@@ -36,9 +37,7 @@ class ListsApi {
 
   Future markItemAs(String listId, String itemId, bool completed) async {
     return handleDioRequest(
-      () => dio.patch('/lists/$listId/$itemId', data: {
-        'completed': completed,
-      }),
+      () => dio.patch('/lists/$listId/$itemId', data: {'completed': completed}),
     );
   }
 

@@ -23,7 +23,7 @@ class ListsRepository {
     return res.items;
   }
 
-  Future addItemToList(String text, String listId) =>
+  Future<String> addItemToList(String text, String listId) =>
       api.addItemToList(text, listId);
 
   Future editItem(String text, String listId, String itemId) =>

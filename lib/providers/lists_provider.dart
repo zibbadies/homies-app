@@ -42,9 +42,10 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
 
     try {
       final lists = await ref.read(listsProvider.future);
-      await ref
+      final newId = await ref
           .read(listsRepositoryProvider)
           .addItemToList(text, lists.todo.id);
+      state = AsyncValue.data([newItem.copyWith(id: newId), ...current]);
     } catch (e, _) {
       state = AsyncValue.data(current);
       rethrow;
@@ -52,15 +53,34 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
   }
 
   Future<void> editItem(String text, String id) async {
-    final lists = await ref.read(listsProvider.future);
-    await ref.read(listsRepositoryProvider).editItem(text, lists.todo.id, id);
-    ref.invalidateSelf();
+    final current = state.value ?? [];
+
+    state = AsyncData(
+      current.map((i) => i.id == id ? i.copyWith(text: text) : i).toList(),
+    );
+
+    try {
+      final lists = await ref.read(listsProvider.future);
+      await ref.read(listsRepositoryProvider).editItem(text, lists.todo.id, id);
+    } catch (e, _) {
+      state = AsyncValue.data(current);
+      rethrow;
+    }
   }
 
   Future<void> deleteItem(String id) async {
-    final lists = await ref.read(listsProvider.future);
-    await ref.read(listsRepositoryProvider).deleteItem(lists.todo.id, id);
-    ref.invalidateSelf();
+    final current = state.value ?? [];
+
+    state = AsyncData(current.where((i) => i.id != id).toList());
+
+    try {
+      final lists = await ref.read(listsProvider.future);
+      await ref.read(listsRepositoryProvider).deleteItem(lists.todo.id, id);
+    } catch (e, _) {
+      // TODO: ma se cancello due task di fila e da errore solo la prima che si fa?
+      state = AsyncValue.data(current);
+      rethrow;
+    }
   }
 
   Future<void> markItemAs(bool completed, String id) async {
@@ -70,23 +90,4 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
         .markItemAs(lists.todo.id, id, completed);
     ref.invalidateSelf();
   }
-
-  /*
-  /// ❌ Delete item (optimistic)
-  Future<void> deleteItem(String id) async {
-    final current = state.value ?? [];
-
-    state = AsyncData(
-      current.where((i) => i.id != id).toList(),
-    );
-
-    try {
-      await _repo.deleteItem(id);
-    } catch (e, st) {
-      // rollback
-      state = AsyncData(current);
-    }
-  }
-
-*/
 }
