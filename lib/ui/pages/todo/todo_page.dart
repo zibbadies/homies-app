@@ -53,7 +53,6 @@ class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
     final todoList = ref.watch(todoListProvider);
     final user = ref.read(userProvider).value!;
     final home = ref.read(homeProvider).value!;
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -63,72 +62,79 @@ class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
           scrolledUnderElevation: 1,
           surfaceTintColor: context.colors.surface,
           backgroundColor: context.colors.surface,
-          shadowColor: context.colors.onSurface.withValues(
-            alpha: 0.25,
-          ), // Shadow color
+          shadowColor: context.colors.onSurface.withValues(alpha: 0.25),
         ),
         backgroundColor: context.colors.surface,
-
         bottomNavigationBar: HNavBar(currentIndex: 1),
-
         body: RefreshIndicator(
           onRefresh: () async => ref.invalidate(todoListProvider),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: todoList.when(
-              data: (data) => ListView(
-                clipBehavior: Clip.none,
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  SizedBox(height: 24),
-
-                  NewTaskTile(),
-
-                  SizedBox(height: 12),
-
-                  ...data.map(
-                    (item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: HTaskTile(
-                        key: ValueKey(item.id),
-                        id: item.id,
-                        text: item.text,
-                        avatar: item.authorId == user.uid
-                            ? user.avatar
-                            : home.members
-                                  .firstWhereOrNull(
-                                    (m) => m.uid == item.authorId,
-                                  )
-                                  ?.avatar,
-                        onToggle: (_) {},
-                      ),
-                    ),
+            child: Column(
+              children: [
+                const SizedBox(height: 24),
+                IgnorePointer(
+                  ignoring: !todoList.hasValue,
+                  child: Opacity(
+                    opacity: todoList.hasValue ? 1.0 : 0.5,
+                    child: NewTaskTile(),
                   ),
-
-                  SizedBox(height: 24),
-                ],
-              ),
-              error: (e, _) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      e is ErrorWithCode ? e.message : 'Something went wrong',
-                      style: context.texts.titleSmall!.copyWith(
-                        color: context.colors.error,
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: todoList.when(
+                    data: (data) => ListView(
+                      clipBehavior: Clip.none,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        ...data.map(
+                          (item) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: HTaskTile(
+                              key: ValueKey(item.id),
+                              id: item.id,
+                              text: item.text,
+                              avatar: item.authorId == user.uid
+                                  ? user.avatar
+                                  : home.members
+                                        .firstWhereOrNull(
+                                          (m) => m.uid == item.authorId,
+                                        )
+                                        ?.avatar,
+                              onToggle: (_) {},
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                    error: (e, _) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            e is ErrorWithCode
+                                ? e.message
+                                : 'Something went wrong',
+                            style: context.texts.titleSmall!.copyWith(
+                              color: context.colors.error,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          HButton(
+                            onPressed: () => ref.invalidate(todoListProvider),
+                            text: "Retry",
+                            color: context.colors.secondary,
+                            textColor: context.colors.onSecondary,
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    HButton(
-                      onPressed: () => ref.invalidate(todoListProvider),
-                      text: "Retry",
-                      color: context.colors.secondary,
-                      textColor: context.colors.onSecondary,
-                    ),
-                  ],
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                  ),
                 ),
-              ),
-              loading: () => Text("Loading"),
+              ],
             ),
           ),
         ),
