@@ -10,6 +10,7 @@ import "package:homies/ui/components/h_button.dart";
 class HTaskTile extends ConsumerStatefulWidget {
   final String id;
   final String text;
+  final bool completed;
   final Avatar? avatar;
   final void Function(bool) onToggle;
 
@@ -17,6 +18,7 @@ class HTaskTile extends ConsumerStatefulWidget {
     super.key,
     required this.id,
     required this.text,
+    required this.completed,
     this.avatar,
     required this.onToggle,
   });
@@ -94,6 +96,7 @@ class _HTaskTileState extends ConsumerState<HTaskTile> {
 
   @override
   Widget build(BuildContext context) {
+    _completed = widget.completed;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(2),

@@ -94,6 +94,7 @@ class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
                               key: ValueKey(item.id),
                               id: item.id,
                               text: item.text,
+                              completed: item.completed,
                               avatar: item.authorId == user.uid
                                   ? user.avatar
                                   : home.members
