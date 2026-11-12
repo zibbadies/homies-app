@@ -120,20 +120,26 @@ class _LeaveConfirmationModalState
 
   void _handleConfirm() {
     setState(() {
-      ref.invalidate(leaveHomeProvider);
       _confirmed = true;
     });
+    ref.read(leaveHomeProvider.notifier).leave();
   }
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<bool>? leaveHomeAsync = _confirmed
-        ? ref.watch(leaveHomeProvider)
-        : null;
+    final leaveHomeAsync = ref.watch(leaveHomeProvider);
+
+    ref.listen(leaveHomeProvider, (prev, next) {
+      if (next.valueOrNull == true) {
+        ref.invalidate(homeProvider);
+        Navigator.pop(context);
+        context.go('/create_home');
+      }
+    });
 
     return SafeArea(
       child: PopScope(
-        canPop: !(leaveHomeAsync?.isLoading ?? false),
+        canPop: !(_confirmed && leaveHomeAsync.isLoading),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
           child: SizedBox(
@@ -145,11 +151,11 @@ class _LeaveConfirmationModalState
               children: [
                 Text(
                   "Are you sure you\nwant to leave ${widget.homeName}?",
-                  style: context.texts.headlineSmall!.copyWith(),
+                  style: context.texts.headlineSmall,
                   textAlign: TextAlign.left,
                 ),
 
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
                 Text(
                   "This action is irreversible",
@@ -157,69 +163,67 @@ class _LeaveConfirmationModalState
                   textAlign: TextAlign.left,
                 ),
 
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-                leaveHomeAsync == null
-                    ? Column(
-                        children: [
-                          HButton(
-                            text: "Confirm and Leave",
-                            color: context.colors.error,
-                            textColor: context.colors.onError,
-                            onPressed: () => _handleConfirm(),
-                          ),
-                          SizedBox(height: 12),
-
-                          HButton(
-                            text: "Cancel",
-                            color: context.colors.secondary,
-                            textColor: context.colors.onSecondary,
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      )
-                    : leaveHomeAsync.when(
-                        data: (success) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (success) {
-                              ref.invalidate(homeProvider);
-                              Navigator.pop(context);
-                              context.go('/create_home');
-                            }
-                          });
-
-                          return Container();
-                        },
-                        loading: () => Column(
-                          children: [
-                            HButton(
-                              loading: true,
-                              color: context.colors.error,
-                              loadingColor: context.colors.onError,
-                            ),
-                            SizedBox(height: 12),
-
-                            HButton(
-                              text: "Cancel",
-                              color: context.colors.secondary.withAlpha(120),
-                              textColor: context.colors.onSecondary,
-                            ),
-                          ],
-                        ),
-                        error: (e, stack) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (e is ErrorWithCode) ...[
-                              Text(
-                                e.message,
-                                style: context.texts.titleLarge!.copyWith(
-                                  color: context.colors.error,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
+                if (!_confirmed)
+                  Column(
+                    children: [
+                      HButton(
+                        text: "Confirm and Leave",
+                        color: context.colors.error,
+                        textColor: context.colors.onError,
+                        onPressed: _handleConfirm,
                       ),
+                      const SizedBox(height: 12),
+
+                      HButton(
+                        text: "Cancel",
+                        color: context.colors.secondary,
+                        textColor: context.colors.onSecondary,
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  )
+                else
+                  leaveHomeAsync.when(
+                    data: (_) => Container(), // navigation happens in listener
+                    loading: () => Column(
+                      children: [
+                        HButton(
+                          loading: true,
+                          color: context.colors.error,
+                          loadingColor: context.colors.onError,
+                        ),
+                        const SizedBox(height: 12),
+
+                        HButton(
+                          text: "Cancel",
+                          color: context.colors.secondary.withAlpha(120),
+                          textColor: context.colors.onSecondary,
+                        ),
+                      ],
+                    ),
+                    error: (e, stack) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (e is ErrorWithCode) ...[
+                          Text(
+                            e.message,
+                            style: context.texts.titleLarge!.copyWith(
+                              color: context.colors.error,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        HButton(
+                          text: "Cancel",
+                          color: context.colors.secondary,
+                          textColor: context.colors.onSecondary,
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),

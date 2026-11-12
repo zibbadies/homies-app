@@ -48,7 +48,6 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   }
 
   void reset() {
-    // seocndo me non serve invalidare qua pero boh magari dopo non si sa mai
     // TODO: per qualche motivo se invalido qui poi non autentica piu nulla
     ref.invalidate(userProvider);
     ref.invalidate(homeProvider);
@@ -56,17 +55,13 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     state = const AsyncData(AuthState(isAuthenticated: false));
   }
 
-  void logout() async {
+  Future<void> logout() async {
+    // Idempotency guard: parallel 401s from the Dio interceptor must not
+    // re-enter logout (which invalidates providers → refetches → more 401s).
+    if (state.valueOrNull?.isAuthenticated != true) return;
     await _repo.logout();
     reset();
   }
-
-  /*Future<void> refreshToken() async {
-      state = await AsyncValue.guard(() async {
-        final newToken = await _repo.refreshToken();
-        return AuthState(isAuthenticated: true, token: newToken);
-      });
-  }*/
 }
 
 final authProvider = AsyncNotifierProvider<AuthNotifier, AuthState>(

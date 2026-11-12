@@ -1,30 +1,30 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Smoke test: the app boots inside a ProviderScope and renders the initial
+// loading page. Network calls fail fast in the test environment; we only
+// assert that the widget tree comes up without throwing.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:homies/main.dart';
+import 'package:homies/ui/pages/loading_page.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('app boots and renders the loading page', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const ProviderScope(child: MyApp()));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.byType(MaterialApp), findsOneWidget);
+    expect(find.byType(LoadingPage), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Let pending async work settle: in the test environment the API calls
+    // fail fast, so LoadingPage's listener eventually redirects (e.g. to
+    // /welcome). The explicit time advances flush zero-duration timers Dio
+    // schedules, which pumpAndSettle alone leaves pending.
+    for (var i = 0; i < 3; i++) {
+      await tester.pumpAndSettle(const Duration(milliseconds: 50));
+      await tester.pump(const Duration(milliseconds: 1));
+    }
   });
 }

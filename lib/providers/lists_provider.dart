@@ -10,7 +10,7 @@ final listsRepositoryProvider = Provider(
   (ref) => ListsRepository(ref.watch(listsApiProvider)),
 );
 
-final listsProvider = FutureProvider<ListsProvider>(
+final listsProvider = FutureProvider<ListsPair>(
   (ref) => ref.read(listsRepositoryProvider).getLists(),
 );
 
@@ -18,75 +18,95 @@ final todoListProvider = AsyncNotifierProvider<TodoListNotifier, List<Item>>(
   TodoListNotifier.new,
 );
 
-// una quantita di acqua esagerata sta venendo usata per creare homies.
+/// Todo list state. Mutations are optimistic (the UI updates immediately and
+/// rolls back on failure); addItem refetches after success because the API
+/// returns `{}` on create and the optimistic item carries a temporary id.
 class TodoListNotifier extends AsyncNotifier<List<Item>> {
   @override
   Future<List<Item>> build() async {
     final lists = await ref.read(listsProvider.future);
-    final todo = lists.todo;
 
-    return ref.read(listsRepositoryProvider).getItemsFromList(todo.id);
+    return ref.read(listsRepositoryProvider).getItemsFromList(lists.todo.id);
   }
 
+  Future<String> _todoListId() async =>
+      (await ref.read(listsProvider.future)).todo.id;
+
   Future<void> addItem(String text) async {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return;
+
     final current = state.value ?? [];
 
     final newItem = Item(
       id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
-      text: text,
-      authorId: ref.read(userProvider).valueOrNull?.uid ?? "allmusic",
+      text: trimmed,
+      authorId: ref.read(userProvider).valueOrNull?.uid ?? '',
       completed: false,
     );
 
     state = AsyncValue.data([newItem, ...current]);
 
     try {
-      final lists = await ref.read(listsProvider.future);
-      await ref
-          .read(listsRepositoryProvider)
-          .addItemToList(text, lists.todo.id);
-    } catch (e, _) {
+      final listId = await _todoListId();
+      await ref.read(listsRepositoryProvider).addItemToList(trimmed, listId);
+      // Replace the temp item with the real server-side items.
+      ref.invalidateSelf();
+    } catch (_) {
       state = AsyncValue.data(current);
       rethrow;
     }
   }
 
   Future<void> editItem(String text, String id) async {
-    final lists = await ref.read(listsProvider.future);
-    await ref.read(listsRepositoryProvider).editItem(text, lists.todo.id, id);
-    ref.invalidateSelf();
+    await _mutate(
+      id,
+      (item) => item.copyWith(text: text),
+      (listId) => ref
+          .read(listsRepositoryProvider)
+          .editItem(text, listId, id),
+    );
   }
 
-  Future<void> deleteItem(String id) async {
-    final lists = await ref.read(listsProvider.future);
-    await ref.read(listsRepositoryProvider).deleteItem(lists.todo.id, id);
-    ref.invalidateSelf();
-  }
-
-  Future<void> markItemAs(bool completed, String id) async {
-    final lists = await ref.read(listsProvider.future);
-    await ref
-        .read(listsRepositoryProvider)
-        .markItemAs(lists.todo.id, id, completed);
-    ref.invalidateSelf();
-  }
-
-  /*
-  /// ❌ Delete item (optimistic)
   Future<void> deleteItem(String id) async {
     final current = state.value ?? [];
-
-    state = AsyncData(
-      current.where((i) => i.id != id).toList(),
-    );
+    state = AsyncValue.data(current.where((i) => i.id != id).toList());
 
     try {
-      await _repo.deleteItem(id);
-    } catch (e, st) {
-      // rollback
-      state = AsyncData(current);
+      final listId = await _todoListId();
+      await ref.read(listsRepositoryProvider).deleteItem(listId, id);
+    } catch (_) {
+      state = AsyncValue.data(current);
+      rethrow;
     }
   }
 
-*/
+  Future<void> markItemAs(bool completed, String id) async {
+    await _mutate(
+      id,
+      (item) => item.copyWith(completed: completed),
+      (listId) => ref
+          .read(listsRepositoryProvider)
+          .markItemAs(listId, id, completed),
+    );
+  }
+
+  Future<void> _mutate(
+    String id,
+    Item Function(Item) transform,
+    Future<void> Function(String listId) apiCall,
+  ) async {
+    final current = state.value ?? [];
+    state = AsyncValue.data(
+      current.map((i) => i.id == id ? transform(i) : i).toList(),
+    );
+
+    try {
+      final listId = await _todoListId();
+      await apiCall(listId);
+    } catch (_) {
+      state = AsyncValue.data(current);
+      rethrow;
+    }
+  }
 }

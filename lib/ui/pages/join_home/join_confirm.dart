@@ -26,21 +26,30 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
     setState(() {
       _confirmed = true;
     });
+    ref.read(joinHomeProvider.notifier).join(widget.invite);
   }
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<InviteInfo> inviteInfoAsync = ref.watch(
-      inviteInfoProvider(widget.invite),
-    );
-    final AsyncValue<bool>? joinHomeAsync = _confirmed
-        ? ref.watch(joinHomeProvider(widget.invite))
-        : null;
+    final inviteInfoAsync = ref.watch(inviteInfoProvider(widget.invite));
+    final joinHomeAsync = ref.watch(joinHomeProvider);
+
+    ref.listen(joinHomeProvider, (prev, next) {
+      if (next.valueOrNull == true) {
+        context.go('/loading');
+      }
+    });
+
+    ref.listen(inviteInfoProvider(widget.invite), (prev, next) {
+      if (next.hasError) {
+        context.go('/join_home', extra: widget.invite);
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
-        actions: [SettingsAvatarButton()],
+        actions: const [SettingsAvatarButton()],
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
         backgroundColor: context.colors.surface,
@@ -67,14 +76,14 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
                           text: "You are going to join ${inviteInfo.name}",
                         ),
 
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
 
                         Text(
                           "Do you know these folks?",
                           style: context.texts.displaySmall,
                         ),
 
-                        SizedBox(height: 36),
+                        const SizedBox(height: 36),
 
                         Center(
                           child: SizedBox(
@@ -92,7 +101,7 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
                                   child: Column(
                                     children: [
                                       HAvatar(avatar: member.avatar, size: 60),
-                                      SizedBox(height: 8),
+                                      const SizedBox(height: 8),
                                       Text(
                                         member.name,
                                         style: context.texts.bodyLarge,
@@ -108,10 +117,7 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
                     );
                   },
                   error: (e, stack) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      context.go('/join_home', extra: widget.invite);
-                    });
-
+                    // Navigation back to /join_home happens in the listener.
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -127,63 +133,54 @@ class _JoinConfirmState extends ConsumerState<JoinConfirm> {
                       ],
                     );
                   },
-                  loading: () => Text("loading"), // handle better loading
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
 
-                SizedBox(height: 36),
+                const SizedBox(height: 36),
 
-                joinHomeAsync == null
-                    ? HButton(
-                        text: "Confirm and Join",
-                        color: context.colors.primary,
-                        onPressed: () => _handleConfirm(),
-                      )
-                    : joinHomeAsync.when(
-                        data: (success) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (success) {
-                              context.go('/loading');
-                            }
-                          });
-
-                          return HButton(
-                            text: "Confirm and Join",
-                            color: context.colors.primary,
-                            onPressed: () => _handleConfirm(),
-                          );
-                        },
-                        loading: () => HButton(
-                          color: context.colors.primary,
-                          loading: true,
-                          loadingColor: context.colors.onPrimary,
-                        ),
-                        error: (e, stack) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (e is ErrorWithCode) ...[
-                              Text(
-                                e.message,
-                                style: context.texts.titleSmall!.copyWith(
-                                  color: context.colors.error,
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                            ],
-
-                            HButton(
-                              text: "Try Again",
-                              color: context.colors.primary,
-                              onPressed: () {
-                                // ignore: unused_result
-                                // ref.refresh(joinHomeProvider(widget.invite));
-                                _handleConfirm();
-                              },
+                if (!_confirmed)
+                  HButton(
+                    text: "Confirm and Join",
+                    color: context.colors.primary,
+                    onPressed: _handleConfirm,
+                  )
+                else
+                  joinHomeAsync.when(
+                    data: (_) => HButton(
+                      text: "Confirm and Join",
+                      color: context.colors.primary,
+                      onPressed: _handleConfirm,
+                    ),
+                    loading: () => HButton(
+                      color: context.colors.primary,
+                      loading: true,
+                      loadingColor: context.colors.onPrimary,
+                    ),
+                    error: (e, stack) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (e is ErrorWithCode) ...[
+                          Text(
+                            e.message,
+                            style: context.texts.titleSmall!.copyWith(
+                              color: context.colors.error,
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
 
-                SizedBox(height: 12),
+                        HButton(
+                          text: "Try Again",
+                          color: context.colors.primary,
+                          onPressed: _handleConfirm,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                const SizedBox(height: 12),
 
                 HButton(
                   text: "Cancel",

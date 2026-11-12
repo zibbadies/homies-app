@@ -21,10 +21,12 @@ class ListId {
   }
 }
 
-class ListsProvider {
+/// The two well-known lists of a home, resolved by name from [ListsResponse].
+class ListsPair {
   final ListId todo;
   final ListId shopping;
-  ListsProvider({required this.todo, required this.shopping});
+
+  const ListsPair({required this.todo, required this.shopping});
 }
 
 class ItemsResponse {
@@ -58,6 +60,15 @@ class Item {
       text: json['text'],
       completed: json['completed'],
       authorId: json['author'],
+    );
+  }
+
+  Item copyWith({String? text, bool? completed}) {
+    return Item(
+      id: id,
+      text: text ?? this.text,
+      completed: completed ?? this.completed,
+      authorId: authorId,
     );
   }
 }

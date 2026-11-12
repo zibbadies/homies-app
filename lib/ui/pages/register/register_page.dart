@@ -62,6 +62,14 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
     final authState = ref.watch(authProvider);
     final authNotifier = ref.read(authProvider.notifier);
 
+    // Navigation on successful register/login lives in a listener, not in
+    // the when(data:) builder (which would re-run on every rebuild).
+    ref.listen(authProvider, (prev, next) {
+      if (next.valueOrNull?.isAuthenticated == true) {
+        redirect(context, '/loading');
+      }
+    });
+
     void handleRegister() {
       if (_formKey.currentState!.validate()) {
         authNotifier.register(
@@ -111,10 +119,6 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
 
           authState.when(
             data: (auth) {
-              if (auth.isAuthenticated) {
-                 redirect(context, '/loading');
-              }
-
               return HButton(
                 text: "Sign Up",
                 color: context.colors.primary,

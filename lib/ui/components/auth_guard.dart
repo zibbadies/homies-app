@@ -12,6 +12,9 @@ class AuthGuard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(authProvider, (prev, next) {
+      // Skip refreshing states: they replay the previous value/error and
+      // must not trigger a redirect.
+      if (next.isLoading) return;
       next.when(
         data: (data) {
           if (!data.isAuthenticated) redirect(context, "/welcome");

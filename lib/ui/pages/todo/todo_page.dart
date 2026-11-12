@@ -4,153 +4,159 @@ import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/data/models/error.dart';
 import 'package:homies/extensions/theme_extension.dart';
+import 'package:homies/providers/connectivity_provider.dart';
 import 'package:homies/providers/lists_provider.dart';
 import 'package:homies/providers/user_provider.dart';
 import 'package:homies/ui/components/h_button.dart';
 import 'package:homies/ui/components/h_navbar.dart';
+import 'package:homies/ui/components/h_offline_card.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_task_tile.dart';
-import 'package:homies/ui/pages/create_home/settings_avatar_button.dart';
+import 'package:homies/ui/components/settings_avatar_button.dart';
 
-class TodoPage extends ConsumerStatefulWidget {
+class TodoPage extends ConsumerWidget {
   const TodoPage({super.key});
 
   @override
-  ConsumerState<TodoPage> createState() => _TodoPageState();
-}
-
-class _TodoPageState extends ConsumerState<TodoPage> with RouteAware {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // ref.refresh(overviewProvider);
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final route = ModalRoute.of(context);
-    if (route is PageRoute) {
-      RouteObserver<PageRoute>().subscribe(this, route);
-    }
-  }
-
-  @override
-  void dispose() {
-    RouteObserver<PageRoute>().unsubscribe(this);
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    // ref.refresh(overviewProvider);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final todoList = ref.watch(todoListProvider);
-    final user = ref.read(userProvider).value!;
-    final home = ref.read(homeProvider).value!;
+    final user = ref.watch(userProvider).valueOrNull;
+    final home = ref.watch(homeProvider).valueOrNull;
+    final isOnline = ref.watch(connectivityProvider);
+    // Ignore the stale error carried by a refresh in progress.
+    final todoError = todoList.isLoading ? null : todoList.error;
+    final showCard = !isOnline || todoError != null;
+    final cardMessage = !isOnline
+        ? "You're offline — some data may be unavailable"
+        : todoError is ErrorWithCode
+        ? todoError.message
+        : 'Something went wrong';
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
           title: HTitle(text: "Homies", style: context.texts.titleLarge),
-          actions: [SettingsAvatarButton()],
+          actions: const [SettingsAvatarButton()],
           scrolledUnderElevation: 1,
           surfaceTintColor: context.colors.surface,
           backgroundColor: context.colors.surface,
           shadowColor: context.colors.onSurface.withValues(alpha: 0.25),
         ),
         backgroundColor: context.colors.surface,
-        bottomNavigationBar: HNavBar(currentIndex: 1),
-        body: RefreshIndicator(
-          onRefresh: () async => ref.invalidate(todoListProvider),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 24),
-                IgnorePointer(
-                  ignoring: !todoList.hasValue,
-                  child: Opacity(
-                    opacity: todoList.hasValue ? 1.0 : 0.5,
-                    child: NewTaskTile(),
-                  ),
+        bottomNavigationBar: const HNavBar(currentIndex: 1),
+        body: Column(
+          children: [
+            if (showCard)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                child: HOfflineCard(
+                  message: cardMessage,
+                  icon: isOnline
+                      ? LucideIcons.cloud_off
+                      : LucideIcons.wifi_off,
+                  onRetry: () => ref.invalidate(todoListProvider),
                 ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: todoList.when(
-                    data: (data) => ListView(
-                      clipBehavior: Clip.none,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        ...data.map(
-                          (item) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: HTaskTile(
-                              key: ValueKey(item.id),
-                              id: item.id,
-                              text: item.text,
-                              completed: item.completed,
-                              avatar: item.authorId == user.uid
-                                  ? user.avatar
-                                  : home.members
-                                        .firstWhereOrNull(
-                                          (m) => m.uid == item.authorId,
-                                        )
-                                        ?.avatar,
-                              onToggle: (_) {},
-                            ),
-                          ),
+              ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () => ref.refresh(todoListProvider.future),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 24),
+                      IgnorePointer(
+                        ignoring: !todoList.hasValue,
+                        child: Opacity(
+                          opacity: todoList.hasValue ? 1.0 : 0.5,
+                          child: const NewTaskTile(),
                         ),
-                        const SizedBox(height: 24),
-                      ],
-                    ),
-                    error: (e, _) => Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            e is ErrorWithCode
-                                ? e.message
-                                : 'Something went wrong',
-                            style: context.texts.titleSmall!.copyWith(
-                              color: context.colors.error,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          HButton(
-                            onPressed: () => ref.invalidate(todoListProvider),
-                            text: "Retry",
-                            color: context.colors.secondary,
-                            textColor: context.colors.onSecondary,
-                          ),
-                        ],
                       ),
-                    ),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: todoList.when(
+                          data: (data) => ListView(
+                            clipBehavior: Clip.none,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              ...data.map(
+                                (item) => Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 12.0,
+                                  ),
+                                  child: HTaskTile(
+                                    key: ValueKey(item.id),
+                                    id: item.id,
+                                    text: item.text,
+                                    completed: item.completed,
+                                    avatar:
+                                        item.authorId == user?.uid
+                                            ? user!.avatar
+                                            : home?.members
+                                                  .firstWhereOrNull(
+                                                    (m) =>
+                                                        m.uid ==
+                                                        item.authorId,
+                                                  )
+                                                  ?.avatar,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                          // The card above already reports the error and
+                          // offers retry; keep the area empty but
+                          // scrollable so pull-to-refresh still works.
+                          error: (e, _) => ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: const [SizedBox(height: 200)],
+                          ),
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-class NewTaskTile extends ConsumerWidget {
-  NewTaskTile({super.key});
-
-  final newTaskController = TextEditingController();
+class NewTaskTile extends ConsumerStatefulWidget {
+  const NewTaskTile({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NewTaskTile> createState() => _NewTaskTileState();
+}
+
+class _NewTaskTileState extends ConsumerState<NewTaskTile> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit(String text) async {
+    if (text.trim().isEmpty) return;
+    try {
+      await ref.read(todoListProvider.notifier).addItem(text);
+      _controller.clear();
+    } catch (e) {
+      if (mounted) showTaskError(context, e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
@@ -171,7 +177,7 @@ class NewTaskTile extends ConsumerWidget {
 
         title: TextField(
           autofocus: false,
-          controller: newTaskController,
+          controller: _controller,
           style: context.texts.bodyLarge!.copyWith(
             color: context.colors.onSurface,
           ),
@@ -186,16 +192,10 @@ class NewTaskTile extends ConsumerWidget {
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
           ),
-          onSubmitted: (value) =>
-              ref.read(todoListProvider.notifier).addItem(value),
+          onSubmitted: _submit,
         ),
         trailing: HButton(
-          onPressed: () {
-            final text = newTaskController.text;
-            if (text.isEmpty) return;
-            ref.read(todoListProvider.notifier).addItem(text);
-            newTaskController.clear();
-          },
+          onPressed: () => _submit(_controller.text),
           height: 36,
           width: 36,
           borderRadius: 8,

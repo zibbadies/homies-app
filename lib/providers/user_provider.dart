@@ -14,12 +14,21 @@ final userProvider = FutureProvider<User>(
   (ref) => ref.read(userRepositoryProvider).getUser(),
 );
 
-final homeProvider = FutureProvider<Home>(
-  (ref) => ref.read(userRepositoryProvider).getHome(),
+/// Tracks when [homeProvider] last fetched successfully, so pages can skip
+/// redundant refetches while the cached data is still fresh.
+class HomeFreshness {
+  DateTime? fetchedAt;
+}
+
+final homeFreshnessProvider = Provider<HomeFreshness>(
+  (ref) => HomeFreshness(),
 );
 
-/* deprecated 
-final overviewProvider = FutureProvider<Overview>(
-  (ref) => ref.read(userRepositoryProvider).getOverview(),
-);
-*/
+final homeProvider = FutureProvider<Home>((ref) async {
+  // Capture the holder before the await so `ref` is never touched after the
+  // request completes (the provider may have been invalidated mid-flight).
+  final freshness = ref.read(homeFreshnessProvider);
+  final home = await ref.read(userRepositoryProvider).getHome();
+  freshness.fetchedAt = DateTime.now();
+  return home;
+});

@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:homies/data/models/error.dart';
 import 'package:homies/data/models/home.dart';
 import 'package:homies/utils/handle_request.dart';
 
@@ -14,10 +13,10 @@ class HomeApi {
     });
   }
 
-  Future<InviteInfo> getInviteInfo(Invite invite) async {
+  Future<Home> getInviteInfo(Invite invite) async {
     return handleDioRequest(() async {
       final res = await dio.get('/house/${invite.code}');
-      return InviteInfo.fromJson(res.data);
+      return Home.fromJson(res.data);
     });
   }
 

@@ -50,16 +50,6 @@ class InviteAfterCreateHome extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   onTap: () {
                     Clipboard.setData(ClipboardData(text: invite.code));
-                    /*ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Copied to clipboard!',
-                          style: context.texts.bodyMedium!.copyWith(
-                            color: context.colors.surface,
-                          ),
-                        ),
-                      ),
-                    );*/
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

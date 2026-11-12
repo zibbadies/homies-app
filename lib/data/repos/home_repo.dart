@@ -24,7 +24,7 @@ class HomeRepository {
     return success;
   }
 
-  Future<InviteInfo> getInviteInfo(Invite invite) async {
+  Future<Home> getInviteInfo(Invite invite) async {
     final inviteInfo = await api.getInviteInfo(invite);
 
     return inviteInfo;

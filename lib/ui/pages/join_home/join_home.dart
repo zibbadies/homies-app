@@ -21,7 +21,7 @@ class JoinHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: HTitle(text: "Homies", style: context.texts.titleLarge),
-        actions: [SettingsAvatarButton()],
+        actions: const [SettingsAvatarButton()],
         automaticallyImplyLeading: false,
         scrolledUnderElevation: 1,
         surfaceTintColor: context.colors.surface,
@@ -60,12 +60,12 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
 
   @override
   void initState() {
+    super.initState();
     _invite = widget.invite;
 
     if (_invite?.code.isNotEmpty == true) {
       _inviteCodeController.text = _invite!.code;
     }
-    super.initState();
   }
 
   @override
@@ -75,18 +75,28 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
   }
 
   void _handleGetInviteInfo() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _invite = Invite(code: _inviteCodeController.text.trim());
-      });
-    }
+    if (!_formKey.currentState!.validate()) return;
+    setState(() {
+      _invite = Invite(code: _inviteCodeController.text.trim());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<InviteInfo>? inviteInfoAsync = _invite != null
-        ? ref.watch(inviteInfoProvider(_invite!))
+    final invite = _invite;
+    final inviteInfoAsync = invite != null
+        ? ref.watch(inviteInfoProvider(invite))
         : null;
+
+    if (invite != null) {
+      ref.listen(inviteInfoProvider(invite), (prev, next) {
+        if (next.hasValue) {
+          // .go (not .push) so this page — and the autoDispose family
+          // instance it watches — are disposed on navigation.
+          context.go('/join_confirm', extra: invite);
+        }
+      });
+    }
 
     return PopScope(
       canPop: inviteInfoAsync == null || !inviteInfoAsync.isLoading,
@@ -98,14 +108,14 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
           children: [
             HTitle(text: "Insert the\nInvite Code"),
 
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             Text(
               "You can ask it to your friend",
               style: context.texts.displaySmall,
             ),
 
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             HLabeledInput(
               label: "Invite Code",
@@ -115,64 +125,49 @@ class _JoinHomeFormState extends ConsumerState<JoinHomeForm> {
               // TODO: add personalized keebType
             ),
 
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-            inviteInfoAsync == null
-                ? HButton(
-                    text: "Join",
-                    color: context.colors.primary,
-                    onPressed: () => _handleGetInviteInfo(),
-                  )
-                : inviteInfoAsync.when(
-                    data: (inviteInfo) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        // TODO: here i should find a way to dispose.
-                        // here i use .go to force the dispose of this widget
-                        context.go('/join_confirm', extra: _invite);
-                      });
+            if (inviteInfoAsync == null)
+              HButton(
+                text: "Join",
+                color: context.colors.primary,
+                onPressed: _handleGetInviteInfo,
+              )
+            else
+              inviteInfoAsync.when(
+                data: (_) => HButton(
+                  text: "Join",
+                  color: context.colors.primary,
+                  onPressed: _handleGetInviteInfo,
+                ),
+                loading: () => HButton(
+                  color: context.colors.primary,
+                  loading: true,
+                  loadingColor: context.colors.onPrimary,
+                ),
+                error: (e, stack) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (e is ErrorWithCode) ...[
+                      Text(
+                        e.message,
+                        style: context.texts.titleSmall!.copyWith(
+                          color: context.colors.error,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
 
-                      return HButton(
-                        text: "Join",
-                        color: context.colors.primary,
-                        onPressed: () => _handleGetInviteInfo(),
-                      );
-                    },
-                    loading: () => HButton(
+                    HButton(
+                      text: "Try Again",
                       color: context.colors.primary,
-                      loading: true,
-                      loadingColor: context.colors.onPrimary,
+                      onPressed: _handleGetInviteInfo,
                     ),
-                    error: (e, stack) {
-                      // here i should put a warn maybe idk
-                      //if (e is ErrorWithCode && e.code == "user_in_house") {
-                      //  redirect(context, "/");
-                      //}
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (e is ErrorWithCode) ...[
-                            Text(
-                              e.message,
-                              style: context.texts.titleSmall!.copyWith(
-                                color: context.colors.error,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                          ],
+                  ],
+                ),
+              ),
 
-                          HButton(
-                            text: "Try Again",
-                            color: context.colors.primary,
-                            onPressed: () {
-                              _handleGetInviteInfo();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             HButton(
               text: "Create a New Home",

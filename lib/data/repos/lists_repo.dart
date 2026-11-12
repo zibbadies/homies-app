@@ -6,10 +6,10 @@ class ListsRepository {
 
   ListsRepository(this.api);
 
-  Future<ListsProvider> getLists() async {
+  Future<ListsPair> getLists() async {
     final res = await api.getLists();
 
-    final lists = ListsProvider(
+    final lists = ListsPair(
       todo: res.lists.firstWhere((e) => e.name == "todo"),
       shopping: res.lists.firstWhere((e) => e.name == "shopping"),
     );
@@ -23,21 +23,15 @@ class ListsRepository {
     return res.items;
   }
 
-  Future addItemToList(String text, String listId) =>
+  Future<void> addItemToList(String text, String listId) =>
       api.addItemToList(text, listId);
 
-  Future editItem(String text, String listId, String itemId) =>
+  Future<void> editItem(String text, String listId, String itemId) =>
       api.editItem(text, listId, itemId);
 
-  Future deleteItem(String listId, String itemId) =>
+  Future<void> deleteItem(String listId, String itemId) =>
       api.deleteItem(listId, itemId);
 
-  Future markItemAs(String listId, String itemId, bool completed) =>
+  Future<void> markItemAs(String listId, String itemId, bool completed) =>
       api.markItemAs(listId, itemId, completed);
-
-  /*Future deleteItem(String text, String listId, String itemId) async {
-    final res = await api.editItem(text, listId, itemId);
-
-    return res.items;
-  }*/
 }

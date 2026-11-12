@@ -57,12 +57,14 @@ Il token viene estratto automaticamente dal middleware e reso disponibile nel co
 **Body richiesto:**
 ```json
 {
-  "text": "Testo dell'item"
+  "text": "Testo dell'item",
+  "due_at": "2026-11-15T18:00:00Z"
 }
 ```
 
 **Validazioni:**
 - Il campo `text` deve superare la validazione `list_item_text`
+- Il campo `due_at` è **opzionale**: stringa RFC3339 (validazione `list_item_due`), `null` o assente → nessuna scadenza
 - L'utente deve appartenere alla stessa casa della lista
 - La lista deve esistere
 
@@ -100,13 +102,17 @@ Il token viene estratto automaticamente dal middleware e reso disponibile nel co
     {
       "id": "item_id",
       "text": "Testo dell'item",
-      "list_id": "list_id",
-      "created_by": "user_id",
-      ...
+      "completed": false,
+      "author": "user_id",
+      "created_at": "2026-11-10T15:00:00Z",
+      "due_at": "2026-11-15T18:00:00Z"
     }
   ]
 }
 ```
+
+**Note:**
+- `due_at` è `null` se l'item non ha una scadenza
 
 **Errori possibili:**
 - `400`: Lista non trovata, errore database
@@ -121,7 +127,7 @@ Il token viene estratto automaticamente dal middleware e reso disponibile nel co
 
 **Endpoint:** `PUT /lists/:id/items/:item_id`
 
-**Descrizione:** Aggiorna il testo di un item esistente.
+**Descrizione:** Aggiorna un item esistente (testo, completamento e/o scadenza).
 
 **Parametri URL:**
 - `id`: ID della lista
@@ -134,12 +140,19 @@ Il token viene estratto automaticamente dal middleware e reso disponibile nel co
 **Body richiesto:**
 ```json
 {
-  "text": "Nuovo testo dell'item"
+  "text": "Nuovo testo dell'item",
+  "due_at": "2026-11-15T18:00:00Z"
 }
 ```
 
+**Semantica di `due_at`:**
+- Campo **assente** → la scadenza esistente non viene modificata
+- Campo **`null`** → la scadenza viene rimossa
+- Campo **valorizzato** (stringa RFC3339) → la scadenza viene impostata/aggiornata
+
 **Validazioni:**
-- Il campo `text` deve superare la validazione `list_item_text`
+- Il campo `text` deve superare la validazione `list_item_text` (se presente; `text` vuoto = aggiornamento solo `completed`/`due_at`)
+- Il campo `due_at`, se valorizzato, deve superare la validazione `list_item_due` (RFC3339)
 - L'utente deve appartenere alla stessa casa della lista
 - La lista deve esistere
 - L'item deve appartenere alla lista specificata (verificato lato database)

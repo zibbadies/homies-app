@@ -22,15 +22,17 @@ class Avatar {
   });
 
   factory Avatar.fromJson(Map<String, dynamic> json) {
+    // Go's encoding/json emits whole numbers as ints (4, not 4.0),
+    // so every numeric field goes through num.toDouble().
     return Avatar(
       bgColor: json['bg_color'],
       faceColor: json['face_color'],
-      faceX: json['face_x'],
-      faceY: json['face_y'],
-      leX: json['le_x'],
-      leY: json['le_y'],
-      reX: json['re_x'],
-      reY: json['re_y'],
+      faceX: (json['face_x'] as num).toDouble(),
+      faceY: (json['face_y'] as num).toDouble(),
+      leX: (json['le_x'] as num).toDouble(),
+      leY: (json['le_y'] as num).toDouble(),
+      reX: (json['re_x'] as num).toDouble(),
+      reY: (json['re_y'] as num).toDouble(),
       bezier: json['bezier'],
     );
   }

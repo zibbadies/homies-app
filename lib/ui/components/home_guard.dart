@@ -13,6 +13,9 @@ class HomeGuard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(homeProvider, (prev, next) {
+      // Skip refreshing states: they replay the previous error (see
+      // loading_page.dart) and must not trigger a redirect.
+      if (next.isLoading) return;
       next.when(
         data: (data) => null,
         error: (e, __) {
