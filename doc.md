@@ -92,6 +92,12 @@ Il token viene estratto automaticamente dal middleware e reso disponibile nel co
 **Parametri URL:**
 - `id`: ID della lista
 
+**Query params (tutti opzionali):**
+- `limit`: max item restituiti (default e massimo 10)
+- `from`: RFC3339, solo item con `created_at >= from`
+- `to`: RFC3339, solo item con `created_at < to`
+- `due_on`: `YYYY-MM-DD`, solo item con `due_at` in quel giorno (**UTC**: `[YYYY-MM-DD 00:00, giorno dopo 00:00)`); gli item senza `due_at` sono esclusi
+
 **Headers richiesti:**
 - `Authorization: Bearer <token_jwt>`
 
