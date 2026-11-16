@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:homies/data/models/calendar.dart';
 import 'package:homies/data/models/lists.dart';
+import 'package:homies/utils/dates.dart';
 import 'package:homies/utils/handle_request.dart';
 
 class ListsApi {
@@ -45,4 +47,16 @@ class ListsApi {
   Future deleteItem(String listId, String itemId) async {
     return handleDioRequest(() => dio.delete('/lists/$listId/$itemId'));
   }
+
+  Future<List<DueDay>> getDueDays(DateTime from, DateTime to) async {
+    return handleDioRequest(() async {
+        final res = await dio.get(
+          '/user/me/due-days',
+          queryParameters: {'from': toApiDay(from), 'to': toApiDay(to)},
+        );
+        return (res.data['days'] as List)
+            .map((d) => DueDay.fromJson(d as Map<String, dynamic>))
+            .toList();
+        });
+    }
 }

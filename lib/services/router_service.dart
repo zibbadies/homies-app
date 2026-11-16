@@ -13,6 +13,7 @@ import 'package:homies/ui/pages/login/login_page.dart';
 import 'package:homies/ui/pages/register/register_page.dart';
 import 'package:homies/ui/pages/settings_page.dart';
 import 'package:homies/ui/pages/todo/todo_page.dart';
+import 'package:homies/ui/pages/calendar/calendar_page.dart';
 import 'package:homies/ui/pages/welcome_page.dart';
 
 class RouterService {
@@ -49,6 +50,12 @@ class RouterService {
       path: '/todo',
       pageBuilder: (context, state) =>
           const NoTransitionPage(child: HomeGuard(child: TodoPage())),
+    ),
+    
+    GoRoute(
+      path: '/calendar',
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: HomeGuard(child: CalendarPage())),
     ),
 
     GoRoute(

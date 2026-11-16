@@ -1,3 +1,4 @@
+import 'package:homies/data/models/calendar.dart';
 import 'package:homies/data/models/lists.dart';
 import 'package:homies/data/sources/lists_api.dart';
 
@@ -34,4 +35,11 @@ class ListsRepository {
 
   Future<void> markItemAs(String listId, String itemId, bool completed) =>
       api.markItemAs(listId, itemId, completed);
+
+
+  Future<List<DueDay>> getDueDays({required DateTime from, required DateTime to}) async {
+    final due_days = await api.getDueDays(from, to);
+    
+    return due_days;
+  }
 }
