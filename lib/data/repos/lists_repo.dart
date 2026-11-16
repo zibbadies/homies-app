@@ -7,15 +7,11 @@ class ListsRepository {
 
   ListsRepository(this.api);
 
-  Future<ListsPair> getLists() async {
+  /// Resolves the house's `todo` list by name from GET /lists/.
+  Future<ListId> getTodoList() async {
     final res = await api.getLists();
 
-    final lists = ListsPair(
-      todo: res.lists.firstWhere((e) => e.name == "todo"),
-      shopping: res.lists.firstWhere((e) => e.name == "shopping"),
-    );
-
-    return lists;
+    return res.lists.firstWhere((e) => e.name == "todo");
   }
 
   Future<List<Item>> getItemsFromList(String id) async {
@@ -36,10 +32,6 @@ class ListsRepository {
   Future<void> markItemAs(String listId, String itemId, bool completed) =>
       api.markItemAs(listId, itemId, completed);
 
-
-  Future<List<DueDay>> getDueDays({required DateTime from, required DateTime to}) async {
-    final due_days = await api.getDueDays(from, to);
-    
-    return due_days;
-  }
+  Future<List<DueDay>> getDueDays({required DateTime from, required DateTime to}) =>
+      api.getDueDays(from, to);
 }

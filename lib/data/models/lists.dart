@@ -21,14 +21,6 @@ class ListId {
   }
 }
 
-/// The two well-known lists of a home, resolved by name from [ListsResponse].
-class ListsPair {
-  final ListId todo;
-  final ListId shopping;
-
-  const ListsPair({required this.todo, required this.shopping});
-}
-
 class ItemsResponse {
   final List<Item> items;
 

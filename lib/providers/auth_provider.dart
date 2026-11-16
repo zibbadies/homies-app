@@ -51,7 +51,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     // TODO: per qualche motivo se invalido qui poi non autentica piu nulla
     ref.invalidate(userProvider);
     ref.invalidate(homeProvider);
-    ref.invalidate(listsProvider);
+    ref.invalidate(todoListIdProvider);
     state = const AsyncData(AuthState(isAuthenticated: false));
   }
 

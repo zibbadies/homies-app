@@ -10,8 +10,8 @@ final listsRepositoryProvider = Provider(
   (ref) => ListsRepository(ref.watch(listsApiProvider)),
 );
 
-final listsProvider = FutureProvider<ListsPair>(
-  (ref) => ref.read(listsRepositoryProvider).getLists(),
+final todoListIdProvider = FutureProvider<ListId>(
+  (ref) => ref.read(listsRepositoryProvider).getTodoList(),
 );
 
 final todoListProvider = AsyncNotifierProvider<TodoListNotifier, List<Item>>(
@@ -24,13 +24,13 @@ final todoListProvider = AsyncNotifierProvider<TodoListNotifier, List<Item>>(
 class TodoListNotifier extends AsyncNotifier<List<Item>> {
   @override
   Future<List<Item>> build() async {
-    final lists = await ref.read(listsProvider.future);
+    final listId = await _todoListId();
 
-    return ref.read(listsRepositoryProvider).getItemsFromList(lists.todo.id);
+    return ref.read(listsRepositoryProvider).getItemsFromList(listId);
   }
 
   Future<String> _todoListId() async =>
-      (await ref.read(listsProvider.future)).todo.id;
+      (await ref.read(todoListIdProvider.future)).id;
 
   Future<void> addItem(String text) async {
     final trimmed = text.trim();

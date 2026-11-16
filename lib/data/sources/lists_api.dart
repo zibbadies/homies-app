@@ -50,13 +50,13 @@ class ListsApi {
 
   Future<List<DueDay>> getDueDays(DateTime from, DateTime to) async {
     return handleDioRequest(() async {
-        final res = await dio.get(
-          '/user/me/due-days',
-          queryParameters: {'from': toApiDay(from), 'to': toApiDay(to)},
-        );
-        return (res.data['days'] as List)
-            .map((d) => DueDay.fromJson(d as Map<String, dynamic>))
-            .toList();
-        });
-    }
+      final res = await dio.get(
+        '/lists/due-days',
+        queryParameters: {'from': toApiDay(from), 'to': toApiDay(to)},
+      );
+      return (res.data['days'] as List)
+          .map((d) => DueDay.fromJson(d as Map<String, dynamic>))
+          .toList();
+    });
+  }
 }

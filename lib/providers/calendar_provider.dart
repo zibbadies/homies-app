@@ -41,7 +41,7 @@ final dueDaysProvider = FutureProvider.autoDispose
   final grid = monthGridDays(month);
   final last = grid.last;
 
-  final days = await ref.watch(listsProvider).getDueDays( // ADAPT provider name
+  final days = await ref.read(listsRepositoryProvider).getDueDays(
     from: grid.first,
     to: DateTime(last.year, last.month, last.day + 1), // `to` is EXCLUSIVE
   );

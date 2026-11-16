@@ -30,7 +30,36 @@ Rate limit: 10 req/s on `/lists`. Errors always look like:
 ### 1. `GET /lists/` — all lists of the user's house
 Response: `{"lists": [List, ...]}`
 
-### 2. `GET /lists/:id/` — items of a list (paged, time-filtered)
+### 2. `GET /lists/due-days` — calendar preview: which UTC days have due tasks
+House-level aggregate for a calendar grid. The house is taken from the JWT (no path
+param). **Only the house's list literally named `todo`** is scanned, and only its tasks
+with a non-null `due_at`. Returns one entry per UTC day that has due tasks.
+
+Query params (both optional, combinable):
+- `from` — `YYYY-MM-DD`; only days with tasks due at/after this UTC midnight. Invalid/missing → no lower bound.
+- `to` — `YYYY-MM-DD`; **exclusive**; only days with tasks due before this UTC midnight. Invalid/missing → no upper bound.
+
+Response: `{"days": [DueDay, ...]}` — ordered by `date` **ASC**; `[]` when nothing matches.
+```json
+{ "days": [ { "date": "2026-11-15", "total": 3, "open": 1 } ] }
+```
+- `date` — `YYYY-MM-DD`, the **UTC** day.
+- `total` — number of tasks due that day.
+- `open` — number of those tasks **not** completed.
+
+No pagination — every matching day is returned, so `total`/`open` are exact even for busy days.
+
+⚠️ Same UTC-day caveat as `due_on` (endpoint 3): days are UTC, not device-local. For a
+local calendar grid, widen the range by a day on each side (and remember `to` is
+exclusive) so edge tasks aren't missed.
+
+**Calendar example:** due-day counts for November 2026:
+`GET /lists/due-days?from=2026-11-01&to=2026-12-01`
+
+This gives per-day counts only — to fetch the actual tasks behind a day, call
+`GET /lists/:id/?due_on=YYYY-MM-DD` on the `todo` list (endpoint 3).
+
+### 3. `GET /lists/:id/` — items of a list (paged, time-filtered)
 Query params (all optional, combinable):
 - `limit` — max items, default **10**, capped at 10
 - `from` — RFC3339; only items with `created_at >= from`
@@ -49,7 +78,7 @@ Response: `{"items": [Item, ...]}` — ordered by `created_at` **DESC** (newest 
 **Calendar example:** tasks due on Nov 15, 2026:
 `GET /lists/34/?due_on=2026-11-15`
 
-### 3. `PUT /lists/:id/` — create item
+### 4. `PUT /lists/:id/` — create item
 Body:
 ```json
 { "text": "Buy milk", "due_at": "2026-11-15T18:00:00Z" }
@@ -59,7 +88,7 @@ Body:
 
 Response: `{"id": "34"}` (id of the new item)
 
-### 4. `PATCH /lists/:id/:item_id` — update item
+### 5. `PATCH /lists/:id/:item_id` — update item
 Body fields are all optional, patch-like:
 ```json
 { "text": "New text", "completed": true, "due_at": "2026-11-20T09:00:00Z" }
@@ -75,7 +104,7 @@ Branching logic (quirky, follow exactly):
 
 Response: `{}`
 
-### 5. `DELETE /lists/:id/:item_id` — delete item
+### 6. `DELETE /lists/:id/:item_id` — delete item
 No body. Response: `{}`
 
 ## Error codes (in `error.code`)
@@ -88,4 +117,4 @@ No body. Response: `{}`
 - Tasks without a due date (`due_at == null`) never match `due_on` and should not appear on a calendar.
 - All timestamps are UTC (server timezone is UTC); convert to local time in the client.
 - Pagination cap is 10 items per request and there is no offset/cursor param — a busy day with >10 due tasks in one list cannot be fully retrieved with `due_on` alone yet.
-- There is no cross-list "all events" endpoint: iterate over `GET /lists/` and query each list.
+- For the `todo` list, `GET /lists/due-days` (endpoint 2) returns house-wide per-day `total`/`open` counts in one call — ideal for marking calendar days. It returns counts only (not the items) and covers **only** the `todo` list; for other lists, or to fetch the items themselves, iterate over `GET /lists/` and query each list with `due_on`.
