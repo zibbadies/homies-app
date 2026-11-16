@@ -14,8 +14,8 @@ class ListsRepository {
     return res.lists.firstWhere((e) => e.name == "todo");
   }
 
-  Future<List<Item>> getItemsFromList(String id) async {
-    final res = await api.getItemsFromList(id);
+  Future<List<Item>> getItemsFromList(String id, {DateTime? dueOn}) async {
+    final res = await api.getItemsFromList(id, dueOn: dueOn);
 
     return res.items;
   }

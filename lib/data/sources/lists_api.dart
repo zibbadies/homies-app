@@ -15,9 +15,12 @@ class ListsApi {
     });
   }
 
-  Future<ItemsResponse> getItemsFromList(String listId) async {
+  Future<ItemsResponse> getItemsFromList(String listId, {DateTime? dueOn}) async {
     return handleDioRequest(() async {
-      final res = await dio.get('/lists/$listId/');
+      final res = await dio.get(
+        '/lists/$listId/',
+        queryParameters: dueOn != null ? {'due_on': toApiDay(dueOn)} : null,
+      );
       return ItemsResponse.fromJson(res.data);
     });
   }

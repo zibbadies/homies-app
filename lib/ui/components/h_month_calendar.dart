@@ -167,16 +167,16 @@ class _DayCell extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           onTap: onTap,
           child: Stack(
-            clipBehavior: Clip.none, // lets the dot poke out of the corner like in the mock
+            clipBehavior: Clip.none,
             alignment: Alignment.center,
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('${day.day}', style: texts.bodyLarge?.copyWith(color: foreground)),
+                  Text('${day.day}', style: texts.labelMedium?.copyWith(color: foreground)),
                   Text(
                     _weekdayLabels[day.weekday - 1],
-                    style: texts.labelMedium?.copyWith(color: foreground),
+                    style: texts.labelMedium?.copyWith(color: foreground, fontWeight: FontWeight.normal),
                   ),
                 ],
               ),
@@ -189,9 +189,8 @@ class _DayCell extends StatelessWidget {
                     height: 10,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      // yellow dot on a yellow cell would vanish
-                      color: (selected ? colors.onPrimary : colors.primary)
-                          .withValues(alpha: allDone ? 0.4 : 1),
+                      // doppio if in una riga se non è chiaro sticazzi
+                      color: (selected ? colors.onPrimary : (allDone ? colors.secondary : colors.primary)),
                     ),
                   ),
                 ),

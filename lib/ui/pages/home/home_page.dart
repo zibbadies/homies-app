@@ -1,15 +1,19 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lucide/flutter_lucide.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:homies/data/models/error.dart';
 import 'package:homies/extensions/theme_extension.dart';
+import 'package:homies/providers/calendar_provider.dart';
 import 'package:homies/providers/connectivity_provider.dart';
 import 'package:homies/providers/user_provider.dart';
 import 'package:homies/ui/components/h_navbar.dart';
 import 'package:homies/ui/components/h_offline_card.dart';
+import 'package:homies/ui/components/h_task_tile.dart';
 import 'package:homies/ui/components/h_title.dart';
 import 'package:homies/ui/components/h_week_calendar.dart';
 import 'package:homies/ui/components/settings_avatar_button.dart';
+import 'package:homies/utils/dates.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -47,13 +51,19 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final homeAsync = ref.watch(homeProvider);
     final isOnline = ref.watch(connectivityProvider);
+    final user = ref.watch(userProvider).valueOrNull;
+    final today = dateOnly(DateTime.now());
+    final dayTasks = ref.watch(dayTasksProvider(today));
     // Ignore the stale error carried by a refresh in progress.
     final homeError = homeAsync.isLoading ? null : homeAsync.error;
-    final showCard = !isOnline || homeError != null;
+    final tasksError = dayTasks.isLoading ? null : dayTasks.error;
+    final showCard = !isOnline || homeError != null || tasksError != null;
     final cardMessage = !isOnline
         ? "You're offline — some data may be unavailable"
         : homeError is ErrorWithCode
         ? homeError.message
+        : tasksError is ErrorWithCode
+        ? tasksError.message
         : "Couldn't load your home";
 
     // The shell (app bar, error card, navbar) always renders for
@@ -84,12 +94,20 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: HOfflineCard(
                 message: cardMessage,
                 icon: isOnline ? LucideIcons.cloud_off : LucideIcons.wifi_off,
-                onRetry: () => ref.invalidate(homeProvider),
+                onRetry: () {
+                  ref.invalidate(homeProvider);
+                  ref.invalidate(dayTasksProvider);
+                },
               ),
             ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () => ref.refresh(homeProvider.future),
+              onRefresh: () async {
+                await Future.wait([
+                  ref.refresh(homeProvider.future),
+                  ref.refresh(dayTasksProvider(today).future),
+                ]);
+              },
               child: homeAsync.when(
                 data: (home) => ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -108,6 +126,38 @@ class _HomePageState extends ConsumerState<HomePage> {
                     Text("Today's Tasks", style: context.texts.headlineMedium),
 
                     const SizedBox(height: 12),
+
+                    // Same day-tasks logic as the calendar page: HTaskTiles
+                    // for the tasks due today (tap opens the task sheet).
+                    ...dayTasks.maybeWhen(
+                      data: (items) => items.map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: HTaskTile(
+                            key: ValueKey(item.id),
+                            id: item.id,
+                            text: item.text,
+                            completed: item.completed,
+                            avatar:
+                                item.authorId == user?.uid
+                                    ? user!.avatar
+                                    : home.members
+                                          .firstWhereOrNull(
+                                            (m) => m.uid == item.authorId,
+                                          )
+                                          ?.avatar,
+                          ),
+                        ),
+                      ),
+                      loading: () => [
+                        const Padding(
+                          padding: EdgeInsets.all(24),
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                      ],
+                      orElse: () => [],
+                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
                 // The card above already reports the error and offers retry;

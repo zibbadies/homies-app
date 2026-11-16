@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:homies/data/models/lists.dart';
 import 'package:homies/providers/lists_provider.dart';
 import '../utils/dates.dart';
 import 'package:homies/data/models/calendar.dart';
@@ -46,4 +47,16 @@ final dueDaysProvider = FutureProvider.autoDispose
     to: DateTime(last.year, last.month, last.day + 1), // `to` is EXCLUSIVE
   );
   return {for (final d in days) d.date: d};
+});
+
+/// Tasks of the `todo` list due on the given (selected) day, via `due_on`.
+/// Note: `due_on` matches on the UTC day (server-side tz handling is planned,
+/// see project-notes/calendar-plan.md), and the API caps at 10 items.
+final dayTasksProvider = FutureProvider.autoDispose
+    .family<List<Item>, DateTime>((ref, day) async {
+  final list = await ref.watch(todoListIdProvider.future);
+  return ref.watch(listsRepositoryProvider).getItemsFromList(
+        list.id,
+        dueOn: day,
+      );
 });

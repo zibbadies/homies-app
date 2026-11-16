@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:homies/providers/calendar_provider.dart';
 import 'package:homies/providers/dio_provider.dart';
 import 'package:homies/data/sources/lists_api.dart';
 import 'package:homies/data/repos/lists_repo.dart';
@@ -75,6 +76,7 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
     try {
       final listId = await _todoListId();
       await ref.read(listsRepositoryProvider).deleteItem(listId, id);
+      _refreshCalendarDay();
     } catch (_) {
       state = AsyncValue.data(current);
       rethrow;
@@ -104,9 +106,17 @@ class TodoListNotifier extends AsyncNotifier<List<Item>> {
     try {
       final listId = await _todoListId();
       await apiCall(listId);
+      _refreshCalendarDay();
     } catch (_) {
       state = AsyncValue.data(current);
       rethrow;
     }
   }
+
+  /// Keeps the calendar's selected-day list in sync after a mutation settles
+  /// (tasks can also be toggled/edited/deleted from the calendar page via
+  /// HTaskTile). dayTasksProvider is autoDispose, so this is a no-op — and
+  /// costs no request — when the calendar page isn't alive.
+  /// TODO(calendar-plan.md): replace with optimistic delta updates.
+  void _refreshCalendarDay() => ref.invalidate(dayTasksProvider);
 }

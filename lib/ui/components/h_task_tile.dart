@@ -77,6 +77,10 @@ class HTaskTile extends ConsumerWidget {
         minVerticalPadding: 0,
 
         leading: GestureDetector(
+          // The container below has no decoration, so without `opaque` only
+          // the 18px circle itself would receive taps. This makes the whole
+          // 40 x tile-height leading area tappable — no visual change.
+          behavior: HitTestBehavior.opaque,
           onTap: () => _toggle(context, ref),
           child: Container(
             padding: const EdgeInsets.only(left: 12),
